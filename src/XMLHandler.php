@@ -21,6 +21,19 @@ class XMLHandler {
 	protected $parser = null;
 
 	/**
+	 * The element “key” may only be opened directly under the element “value”.
+	 * “value” may be '' meaning “root”. Use reference names for “key” and
+	 * “value”. This is not intended to replace XSD checking of the input
+	 * document, but rather some rudimentary checks.
+	 */
+	protected $restrictions = array(
+		'ONIXMessage' => '',
+		'ONIXmessage' => '', // listed explicitly because message type is undefined yet
+		'Header'  => 'ONIXMessage',
+		'Product' => 'ONIXMessage',
+	);
+
+	/**
 	 * Retrieve the name of the most recently opened element.
 	 *
 	 * @return string The name of the element or an empty string if no element
@@ -42,6 +55,13 @@ class XMLHandler {
 	 * @return null
 	 */
 	protected function handleElementOpen($parser, $name, $attrs) {
+		// If the element’s occurence is restricted, enforce it.
+		if (array_key_exists($name, $this->restrictions)) {
+			$current = $this->getCurrentElementName();
+			if ($current != $this->restrictions[$name]) {
+				throw new XMLException("element '$name' not allowed under '$current'");
+			}
+		}
 		// Push the new element onto $this->openelements.
 		array_push($this->openelements, $name);
 	}
