@@ -28,4 +28,9 @@ class WriteException extends PONIparException { }
  */
 class XMLException extends PONIparException { }
 
+/**
+ * Something in the ONIX data violates the standard.
+ */
+class ONIXException extends PONIparException { }
+
 ?>

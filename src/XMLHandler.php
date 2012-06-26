@@ -10,6 +10,11 @@ namespace PONIpar;
 class XMLHandler {
 
 	/**
+	 * Whether the document that’s being parsed uses short tags or not.
+	 */
+	protected $shorttags = false;
+
+	/**
 	 * Holds an array of all the currently open elements. [0] is the root, the
 	 * last value is the most recently opened element.
 	 */
@@ -55,6 +60,19 @@ class XMLHandler {
 	 * @return null
 	 */
 	protected function handleElementOpen($parser, $name, $attrs) {
+		// If this is the root element, set whether short tags are used or not.
+		if (!count($this->openelements)) {
+			switch ($name) {
+				case 'ONIXMessage':
+					$this->shorttags = false;
+					break;
+				case 'ONIXmessage':
+					$this->shorttags = true;
+					break;
+				default:
+					throw new ONIXException('the root element has to be ONIXMessage or ONIXmessage');
+			}
+		}
 		// If the element’s occurence is restricted, enforce it.
 		if (array_key_exists($name, $this->restrictions)) {
 			$current = $this->getCurrentElementName();
