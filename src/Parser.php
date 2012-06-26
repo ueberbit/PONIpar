@@ -3,9 +3,16 @@
 declare(encoding='UTF-8');
 namespace PONIpar;
 
+/**
+ * The main class that users of PONIpar should interact with.
+ *
+ * Configure it with your input stream and high-level handlers.
+ */
 class Parser {
 
-	// The stream we’re reading from. Is null if none has been defined yet.
+	/**
+	 * The stream we’re reading from. Is null if none has been defined yet.
+	 */
 	protected $stream = null;
 
 	/**
