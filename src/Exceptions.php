@@ -23,4 +23,9 @@ class ReadException extends PONIparException { }
  */
 class WriteException extends PONIparException { }
 
+/**
+ * Initializing or using the XML parser failed.
+ */
+class XMLException extends PONIparException { }
+
 ?>

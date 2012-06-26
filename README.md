@@ -11,4 +11,4 @@
 * international: converts every input charset to UTF-8 and thus provides you with UTF-8 strings only
 
 ## Current Status
-PONIpar is currently under development. It can _not_ parse anything yet. Stream opening works. Next thing will be adding the expat callbacks.
+PONIpar is currently under development. It can _not_ parse anything yet. Stream opening works. The expat callbacks are there. Next thing is to understand and parse ONIX and create high-level objects from it.

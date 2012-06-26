@@ -11,9 +11,20 @@ namespace PONIpar;
 class Parser {
 
 	/**
+	 * The number of bytes we’re reading from the stream at a time. Defaults
+	 * to 10KiB.
+	 */
+	protected $chunksize = 10240;
+
+	/**
 	 * The stream we’re reading from. Is null if none has been defined yet.
 	 */
 	protected $stream = null;
+
+	/**
+	 * The XML handler we’re using. Will be created when setting a stream.
+	 */
+	protected $xmlhandler = null;
 
 	/**
 	 * Set a new input stream.
@@ -31,8 +42,32 @@ class Parser {
 		if ($this->stream !== null) {
 			@fclose($this->stream);
 		}
-		// Set the stream and return.
-		$this->stream = $stream;
+		// Create a new XML handler (because the old one may have state etc.).
+		$xml = new XMLHandler();
+		// Set the instance variables and return.
+		$this->xmlhandler = $xml;
+		$this->stream     = $stream;
+		return $this;
+	}
+
+	/**
+	 * Run the parsing process until the stream is empty.
+	 *
+	 * @return Parser $this
+	 */
+	public function parse() {
+		// Check if we have a stream at all.
+		if ($this->stream === null) {
+			throw new ReadException('cannot parse without a configured input stream');
+		}
+		// Read chunks and feed them to the XMLHandler.
+		while (!feof($this->stream)) {
+			$chunk = fread($this->stream, $this->chunksize);
+			$this->xmlhandler->parse($chunk);
+		}
+		// Tell the XMLHandler that there’s nothing left.
+		$this->xmlhandler->parse('', true);
+		// Finish.
 		return $this;
 	}
 
