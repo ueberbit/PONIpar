@@ -10,9 +10,28 @@ namespace PONIpar;
 class XMLHandler {
 
 	/**
+	 * Holds an array of all the currently open elements. [0] is the root, the
+	 * last value is the most recently opened element.
+	 */
+	protected $openelements = array();
+
+	/**
 	 * Holds the Expat XML parser, initialized in the constructor.
 	 */
 	protected $parser = null;
+
+	/**
+	 * Retrieve the name of the most recently opened element.
+	 *
+	 * @return string The name of the element or an empty string if no element
+	 *                has been opened yet.
+	 */
+	protected function getCurrentElementName() {
+		$count = count($this->openelements);
+		return $count
+		     ? $this->openelements[$count - 1]
+		     : '';
+	}
 
 	/**
 	 * Handles an opened XML element.
@@ -23,7 +42,8 @@ class XMLHandler {
 	 * @return null
 	 */
 	protected function handleElementOpen($parser, $name, $attrs) {
-		// TODO: Implement.
+		// Push the new element onto $this->openelements.
+		array_push($this->openelements, $name);
 	}
 
 	/**
@@ -34,7 +54,16 @@ class XMLHandler {
 	 * @return null
 	 */
 	protected function handleElementClose($parser, $name) {
-		// TODO: Implement.
+		// Check whether the element that’s being closed is actually the most
+		// recently opened one. (Expat should guarantee that, but who knows.)
+		$current = $this->getCurrentElementName();
+		if ($name != $current) {
+			throw new InternalException(
+				"closed element name '$name' does not match most recently opened name '$current'"
+			);
+		}
+		// Remove the element from $this->openelements.
+		array_pop($this->openelements);
 	}
 
 	/**
