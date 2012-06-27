@@ -92,15 +92,9 @@ class XMLHandler {
 	 * @return null
 	 */
 	protected function handleElementClose($parser, $name) {
-		// Check whether the element that’s being closed is actually the most
-		// recently opened one. (Expat should guarantee that, but who knows.)
-		$current = $this->getCurrentElementName();
-		if ($name != $current) {
-			throw new InternalException(
-				"closed element name '$name' does not match most recently opened name '$current'"
-			);
-		}
-		// Remove the element from $this->openelements.
+		// Expat guarantees that the element that’s being closed was acutally
+		// the most recently opened one. Therefore, we can simply remove the
+		// element from $this->openelements.
 		array_pop($this->openelements);
 	}
 
