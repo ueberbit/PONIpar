@@ -12,7 +12,7 @@ class XMLHandler {
 	/**
 	 * Whether the document that’s being parsed uses short tags or not.
 	 */
-	protected $shorttags = false;
+	protected $shorttags = null;
 
 	/**
 	 * Holds an array of all the currently open elements. [0] is the root, the
