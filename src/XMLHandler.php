@@ -436,8 +436,8 @@ class XMLHandler {
 	 */
 	protected $restrictions = array(
 		'ONIXMessage' => '',
-		'Header'  => 'ONIXMessage',
-		'Product' => 'ONIXMessage',
+		'Header'  => 'ONIXMessage@1',
+		'Product' => 'ONIXMessage@1',
 	);
 
 	/**
@@ -462,8 +462,9 @@ class XMLHandler {
 	 * @return null
 	 */
 	protected function handleElementOpen($parser, $name, $attrs) {
+		$level = count($this->openelements);
 		// If this is the root element, set whether short tags are used or not.
-		if (!count($this->openelements)) {
+		if ($level == 0) {
 			switch ($name) {
 				case 'ONIXMessage':
 					$this->shorttags = false;
@@ -480,8 +481,19 @@ class XMLHandler {
 		// If the element’s occurence is restricted, enforce it.
 		if (array_key_exists($trans, $this->restrictions)) {
 			$current = $this->getCurrentElementName();
-			if ($current != $this->restrictions[$trans]) {
+			// Load and split restriction.
+			$split = explode('@', $this->restrictions[$trans], 2);
+			// Check whether the parent is allowed.
+			$allowedParent = $split[0];
+			if ($current != $allowedParent) {
 				throw new XMLException("element '$trans' not allowed under '$current'");
+			}
+			// Check whether the level is allowed.
+			$allowedLevel = (count($split) > 1)
+			              ? (int)$split[1]
+			              : null;
+			if (($allowedLevel !== null) && ($level != $allowedLevel)) {
+				throw new XMLException("element '$trans' not allowed in level $level");
 			}
 		}
 		// Push the new element onto $this->openelements.
