@@ -429,6 +429,23 @@ class XMLHandler {
 	protected $parser = null;
 
 	/**
+	 * Our DOMImplementation instance, created in the constructor.
+	 */
+	protected $domImpl = null;
+
+	/**
+	 * When a <Product> element appears, it will be converted into a DOM
+	 * document, which will be stored here. If this is null, we’re not currently
+	 * reading a <Product>.
+	 */
+	protected $productDOM = null;
+
+	/**
+	 * The most recently created element in $productDOM.
+	 */
+	protected $productElement = null;
+
+	/**
 	 * The element “key” may only be opened directly under the element “value”.
 	 * “value” may be '' meaning “root”. Use reference names for “key” and
 	 * “value”. This is not intended to replace XSD checking of the input
@@ -498,6 +515,20 @@ class XMLHandler {
 		}
 		// Push the new element onto $this->openelements.
 		array_push($this->openelements, $name);
+		// Handle the actual parsing of elements we’re interested in.
+		if ($trans == 'Product') {
+			// If a <Product> element opens, start collecting its data.
+			$this->productDOM = $this->domImpl->createDocument(null, $trans);
+			$this->productElement = $this->productDOM->documentElement;
+		} elseif ($this->productDOM) {
+			// If we’re in a product, create and append the element.
+			$el = $this->productDOM->createElement($trans);
+			foreach ($attrs as $k => $v) {
+				$el->setAttribute($k, $v);
+			}
+			$this->productElement->appendChild($el);
+			$this->productElement = $el;
+		}
 	}
 
 	/**
@@ -512,6 +543,19 @@ class XMLHandler {
 		// the most recently opened one. Therefore, we can simply remove the
 		// element from $this->openelements.
 		array_pop($this->openelements);
+		// If we’re currently in a product …
+		if ($this->productDOM) {
+			// Point to the parent element.
+			$this->productElement = $this->productElement->parentNode;
+			// If we just closed the <Product> element, normalize it (e.g. to
+			// concatenate adjacent text nodes), fire up the handler and reset
+			// $this->productDOM.
+			if ($name == 'Product') {
+				$this->productDOM->normalizeDocument();
+				$this->handleProduct($this->productDOM);
+				$this->productDOM = null;
+			}
+		}
 	}
 
 	/**
@@ -522,7 +566,22 @@ class XMLHandler {
 	 * @return null
 	 */
 	protected function handleText($parser, $text) {
-		// TODO: Implement.
+		// If we’re in a product, create and append a text node.
+		if ($this->productDOM) {
+			$text = $this->productDOM->createTextNode($text);
+			$this->productElement->appendChild($text);
+		}
+	}
+
+	/**
+	 * Handles a complete <Product> DOM tree.
+	 *
+	 * @param  DOMDocument $dom The DOM document with a root node of <Product>.
+	 * @return null
+	 */
+	protected function handleProduct($dom) {
+		// TODO: Implement for real.
+		var_dump($dom->saveXML());
 	}
 
 	/**
@@ -572,6 +631,8 @@ class XMLHandler {
 	 * Create and initialize a new instance.
 	 */
 	public function __construct() {
+		// Have a DOMImplementation handy.
+		$this->domImpl = new \DOMImplementation();
 		// Create a parser that outputs UTF-8.
 		$parser = xml_parser_create('UTF-8');
 		if (!is_resource($parser)) {
