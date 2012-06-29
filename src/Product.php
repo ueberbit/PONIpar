@@ -28,6 +28,11 @@ class Product {
 	protected $xpath = null;
 
 	/**
+	 * Holds the subitem instances in our Product.
+	 */
+	protected $subitems = array();
+
+	/**
 	 * Create a new instance based on a <Product> DOM document.
 	 *
 	 * The DOM document needs to have its elements converted to reference names.
@@ -58,6 +63,41 @@ class Product {
 				);
 			}
 		}
+	}
+
+	/**
+	 * Get all child elements with the specified name as an array of either
+	 * Subitem subclass objects or DOMElements.
+	 *
+	 * If there is a matching subclass, that will be (created and) returned,
+	 * else raw DOMElements.
+	 *
+	 * @param  string $name The element name to retrieve.
+	 * @return array  A (possibly empty) array of Subitem subclass objects or
+	 *                DOMElement objects.
+	 */
+	public function get($name) {
+		// If we don’t already have the items in the cache, create them.
+		if (!isset($this->subitems[$name])) {
+			$subitems = array();
+			// Retrieve all matching children.
+			$elements = $this->xpath->query("/Product/$name");
+			// If we have a Subitem subclass for that element, create instances and
+			// return them.
+			$subitemclass = $name . 'ProductSubitem';
+			if (class_exists($subitemclass)) {
+				foreach ($elements as $element) {
+					$subitems[] = new $subitemclass($element);
+				}
+			} else {
+				// Else, return clones of the matched nodes.
+				foreach ($elements as $element) {
+					$subitems[] = $element->cloneNode(true);
+				}
+			}
+			$this->subitems[$name] = $subitems;
+		}
+		return $this->subitems[$name];
 	}
 
 	/**
