@@ -446,6 +446,11 @@ class XMLHandler {
 	protected $productElement = null;
 
 	/**
+	 * The callback to invoke for each found Product.
+	 */
+	protected $productHandler = null;
+
+	/**
 	 * The element “key” may only be opened directly under the element “value”.
 	 * “value” may be '' meaning “root”. Use reference names for “key” and
 	 * “value”. This is not intended to replace XSD checking of the input
@@ -580,8 +585,10 @@ class XMLHandler {
 	 * @return null
 	 */
 	protected function handleProduct($dom) {
-		// TODO: Implement for real.
-		$product = new Product($dom);
+		if ($this->productHandler) {
+			$product = new Product($dom);
+			call_user_func($this->productHandler, $product);
+		}
 	}
 
 	/**
@@ -689,6 +696,22 @@ class XMLHandler {
 				xml_error_string($code)
 			), $code);
 		}
+	}
+
+	/**
+	 * Set the handler for found Product instances.
+	 *
+	 * @param  callable $cb The handler that should be called. Receives a
+	 *                      Product instance as its first parameter. Can be set
+	 *                      to null to remove a possibly set handler.
+	 * @return XMLHandler $this
+	 */
+	public function setProductHandler($cb) {
+		if (!(is_callable($cb) || ($cb === null))) {
+			throw new InternalException('no valid callback specified for setProductHandler');
+		}
+		$this->productHandler = $cb;
+		return $this;
 	}
 
 }

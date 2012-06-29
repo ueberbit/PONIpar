@@ -27,6 +27,11 @@ class Parser {
 	protected $xmlhandler = null;
 
 	/**
+	 * The callable to invoke when a new Product has been parsed.
+	 */
+	protected $productHandler = null;
+
+	/**
 	 * Set a new input stream.
 	 *
 	 * @param  resource $stream The stream to use.
@@ -60,14 +65,40 @@ class Parser {
 		if ($this->stream === null) {
 			throw new ReadException('cannot parse without a configured input stream');
 		}
+		// Bind the product handler to the XML handler.
+		$xml = $this->xmlhandler;
+		$productHandler = $this->productHandler;
+		$xml->setProductHandler(
+			is_callable($productHandler)
+			? function ($product) use ($productHandler) {
+				$productHandler($product);
+			}
+			: null
+		);
 		// Read chunks and feed them to the XMLHandler.
 		while (!feof($this->stream)) {
 			$chunk = fread($this->stream, $this->chunksize);
-			$this->xmlhandler->parse($chunk);
+			$xml->parse($chunk);
 		}
 		// Tell the XMLHandler that there’s nothing left.
-		$this->xmlhandler->parse('', true);
+		$xml->parse('', true);
 		// Finish.
+		return $this;
+	}
+
+	/**
+	 * Set the handler for found Product instances.
+	 *
+	 * @param  callable $cb The handler that should be called. Receives a
+	 *                      Product instance as its first parameter. Can be set
+	 *                      to null to remove a possibly set handler.
+	 * @return Parser $this
+	 */
+	public function setProductHandler($cb) {
+		if (!(is_callable($cb) || ($cb === null))) {
+			throw new InternalException('no valid callback specified for setProductHandler');
+		}
+		$this->productHandler = $cb;
 		return $this;
 	}
 
