@@ -38,8 +38,12 @@ $parser->useStream(fopen('php://temp', 'r'));
 $doc = <<<ONIX
 <ONIXMessage>
 	<Header />
-	<Product />
-	<Product />
+	<Product>
+		<ProductIdentifier>
+			<ProductIDType>03</ProductIDType>
+			<IDValue>0123456789012</IDValue>
+		</ProductIdentifier>
+	</Product>
 </ONIXMessage>
 ONIX;
 
@@ -47,5 +51,27 @@ ONIX;
 // temporary stream (php://temp), write the string in it and rewind the file
 // pointer to start reading from there.
 $parser->useString($doc);
+
+
+
+// Now we set a product handler. This handler will be called during the parsing
+// process as soon as a single product has been parsed completely. You handle
+// the product (write it to the database, convert it to something else or
+// whatever) and then it will be removed from RAM again (unless you decide to
+// store it somewhere, which you probably shouldn’t). That way, we can deal with
+// a virtually unlimited number of products without having to worry about
+// hitting memory limits.
+
+$parser->setProductHandler(function ($product) {
+	var_dump($product);
+});
+
+
+
+// Finally, we instruct PONIpar to start reading the stream and parse the ONIX
+// data. It will not stop during the process (at least not if there are no
+// errors), but call our product handler once for each product.
+
+$parser->parse();
 
 ?>
