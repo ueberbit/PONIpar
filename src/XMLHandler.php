@@ -581,7 +581,7 @@ class XMLHandler {
 	 */
 	protected function handleProduct($dom) {
 		// TODO: Implement for real.
-		var_dump($dom->saveXML());
+		$product = new Product($dom);
 	}
 
 	/**
