@@ -71,7 +71,7 @@ class Parser {
 		$xml->setProductHandler(
 			is_callable($productHandler)
 			? function ($product) use ($productHandler) {
-				$productHandler($product);
+				call_user_func($productHandler, $product);
 			}
 			: null
 		);
