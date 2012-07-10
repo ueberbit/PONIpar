@@ -112,6 +112,30 @@ class Product {
 		return $this->dom->cloneNode(true);
 	}
 
+	/**
+	 * Get a product identifier of the given type.
+	 *
+	 * ONIX allows for multiple identifiers per product. This method retrieves
+	 * all <ProductIdentifier> subitems and returns the one with the given type.
+	 * If there is no identifier with that type, an ElementNotFoundException
+	 * will be thrown.
+	 *
+	 * @todo   Support passing a name for proprietary identifiers.
+	 * @param  string $type The type of identifier to search for. Using one of
+	 *                      ProductIdentifierProductSubitem’s TYPE_* constants
+	 *                      is recommended.
+	 * @return string The found product identifier.
+	 */
+	public function getIdentifier($type) {
+		$ids = $this->get('ProductIdentifier');
+		foreach ($ids as $id) {
+			if ($id->getType() == $type) {
+				return $id->getValue();
+			}
+		}
+		throw new ElementNotFoundException("no identifier of type $type found");
+	}
+
 }
 
 ?>

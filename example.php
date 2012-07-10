@@ -68,16 +68,11 @@ $parser->useString($doc);
 // hitting memory limits.
 
 $parser->setProductHandler(function ($product) {
-	// Retrieve all product identifiers, which are returned as
-	// ProductIdentifierProductSubitem instances.
-	$ids = $product->get('ProductIdentifier');
-	// Print out the numeric type of each identifier and the actual id value.
-	foreach ($ids as $id) {
-		printf("%2s %s\n",
-			$id->getType(),
-			$id->getValue()
-		);
-	}
+	// Retrieve the GTIN-13 for the product and print it.
+	$gtin13 = $product->getIdentifier(
+		PONIpar\ProductIdentifierProductSubitem::TYPE_GTIN13
+	);
+	echo "$gtin13\n";
 });
 
 
