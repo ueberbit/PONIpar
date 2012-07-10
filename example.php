@@ -43,6 +43,11 @@ $doc = <<<ONIX
 			<ProductIDType>03</ProductIDType>
 			<IDValue>0123456789012</IDValue>
 		</ProductIdentifier>
+		<ProductIdentifier>
+			<ProductIDType>01</ProductIDType>
+			<IDTypeName>example type</IDTypeName>
+			<IDValue>foobar</IDValue>
+		</ProductIdentifier>
 	</Product>
 </ONIXMessage>
 ONIX;
@@ -63,7 +68,16 @@ $parser->useString($doc);
 // hitting memory limits.
 
 $parser->setProductHandler(function ($product) {
-	var_dump($product);
+	// Retrieve all product identifiers, which are returned as
+	// ProductIdentifierProductSubitem instances.
+	$ids = $product->get('ProductIdentifier');
+	// Print out the numeric type of each identifier and the actual id value.
+	foreach ($ids as $id) {
+		printf("%2s %s\n",
+			$id->getType(),
+			$id->getValue()
+		);
+	}
 });
 
 

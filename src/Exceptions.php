@@ -33,4 +33,14 @@ class XMLException extends PONIparException { }
  */
 class ONIXException extends PONIparException { }
 
+/**
+ * An XML element that was being looked for was not found.
+ */
+class ElementNotFoundException extends PONIparException { }
+
+/**
+ * Too many XML elements were found (e.g. when only looking for one).
+ */
+class TooManyElementsFoundException extends PONIparException { }
+
 ?>

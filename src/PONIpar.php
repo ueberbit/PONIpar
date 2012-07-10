@@ -7,6 +7,8 @@ foreach (array(
 	'Exceptions',
 	'Parser',
 	'Product',
+	'ProductSubitem',
+		'ProductIdentifierProductSubitem',
 	'XMLHandler',
 ) as $part) {
 	require_once "$part.php";
