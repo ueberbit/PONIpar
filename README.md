@@ -11,4 +11,15 @@
 * international: converts every input charset to UTF-8 and thus provides you with UTF-8 strings only (not implemented yet)
 
 ## Current Status
-PONIpar is currently under development. Stream opening works. The expat callbacks are there. It recognizes `<Product>` elements and calls a user-defined callback for each one found, passing a high-level `Product` object that currently allows accessing the product data via standard DOM calls, soon via high-level convenience classes and methods. The first high-level class (for ProductIdentifiers) is already there.
+PONIpar is currently under development. It recognizes `<Product>` elements and calls a user-defined callback for each one found, passing a high-level `Product` object that currently allows accessing the product data via standard DOM calls and one or two high-level convenience classes and methods. The first high-level class (for ProductIdentifiers) is already there.
+
+You _can_ use it in a production environment if you want to, but you still have to do manual XML parsing of nearly all the `<Product>` properties.
+
+## Requirements
+PONIpar requires at least PHP 5.3 with the “XML Parser” extension.
+
+## License
+The software is provided under the terms of the new (3-clause) BSD license. Please see the file LICENSE for details.
+
+## Author
+PONIpar is authored by [di] digitale informationssysteme GmbH.
