@@ -19,6 +19,7 @@ namespace PONIpar;
 
 foreach (array(
 	'Exceptions',
+	'DirectoryParser',
 	'Parser',
 	'Product',
 	'ProductSubitem',
