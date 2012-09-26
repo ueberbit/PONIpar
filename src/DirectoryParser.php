@@ -20,6 +20,11 @@ namespace PONIpar;
 class DirectoryParser {
 
 	/**
+	 * The name of the file that is currently being parsed.
+	 */
+	protected $currentFile = null;
+
+	/**
 	 * The directory to use.
 	 */
 	protected $dir = null;
@@ -64,6 +69,15 @@ class DirectoryParser {
 	}
 
 	/**
+	 * Retrieve the name of the file that is currently being parsed.
+	 *
+	 * @return string The name of the file that is being parsed.
+	 */
+	public function getCurrentFile() {
+		return $this->currentFile;
+	}
+
+	/**
 	 * Parse all the files.
 	 *
 	 * @return DirectoryParser $this
@@ -71,6 +85,7 @@ class DirectoryParser {
 	public function parse() {
 		$files = $this->getFileList();
 		foreach ($files as $file) {
+			$this->currentFile = $file;
 			$this->parser->useFile(
 				$this->dir . DIRECTORY_SEPARATOR . $file
 			);
