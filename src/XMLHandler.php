@@ -564,7 +564,7 @@ class XMLHandler {
 			// If we just closed the <Product> element, normalize it (e.g. to
 			// concatenate adjacent text nodes), fire up the handler and reset
 			// $this->productDOM.
-			if ($name == 'Product') {
+			if (ucfirst($name) == 'Product') {
 				$this->productDOM->normalizeDocument();
 				$this->handleProduct($this->productDOM);
 				$this->productDOM = null;
