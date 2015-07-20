@@ -22,4 +22,4 @@ PONIpar requires at least PHP 5.3 with the “XML Parser” extension.
 The software is provided under the terms of the new (3-clause) BSD license. Please see the file LICENSE for details.
 
 ## Author
-PONIpar is authored by [di] digitale informationssysteme GmbH.
+PONIpar is authored by UEBERBIT GmbH (www.ueberbit.de).
