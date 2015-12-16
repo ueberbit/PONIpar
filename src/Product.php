@@ -144,6 +144,30 @@ class Product {
 		}
 		throw new ElementNotFoundException("no identifier of type $type found");
 	}
+	
+	
+	public function getForSaleRights(){
+		
+		$sales_rights = $this->get('SalesRights');
+		$rights = '';
+		
+		if( count($sales_rights) == 1 ){
+			$rights = $sales_rights[0]->getValue();
+		}else{
+			
+			foreach($sales_rights as $sr){
+				if( $sr->isForSale() )
+					$rights .= ' '.$sr->getValue();
+			}
+			
+			$rights = trim($rights);
+			$rights = explode(' ', $rights);
+			sort($rights);
+			$rights = implode(' ', $rights);
+		}
+		
+		return $rights;
+	}
 
 }
 

@@ -13,44 +13,35 @@ namespace PONIpar;
 */
 
 /**
- * A <ProductIdentifier> subitem.
+ * A <SalesRights> subitem.
  */
-class TitleProductSubitem extends ProductSubitem {
+class SalesRightsProductSubitem extends ProductSubitem {
 	
 	// TODO - add more type constants
-	const TYPE_DISTINCTIVE_TITLE = "01";
+	const TYPE_UNKNOWN = "00";
+	const TYPE_FOR_SALE_EXCLUSIVE = "01";
+	const TYPE_FOR_SALE_NONEXCLUSIVE = "02";
+	const TYPE_NOT_FOR_SALE = "03";
 
 	/**
-	 * The type of this product identifier.
+	 * The values of this sales right
 	 */
 	protected $type = null;
+	protected $country = null;
+	protected $territory= null;
+	
 
 	/**
-	 * The title's values
-	 */
-	protected $value = array(
-		'title' => null,
-		'subtitle' => null
-	);
-
-	/**
-	 * Create a new ProductIdentifier.
+	 * Create a new SalesRights.
 	 *
-	 * @param mixed $in The <ProductIdentifier> DOMDocument or DOMElement.
+	 * @param mixed $in The <SalesRights> DOMDocument or DOMElement.
 	 */
 	public function __construct($in) {
 		parent::__construct($in);
 		
-		// Retrieve and check the type.
-		$type = $this->_getSingleChildElementText('TitleType');
-		
-		if (!preg_match('/^[0-9]{2}$/', $type)) {
-			throw new ONIXException('wrong format of TitleType');
-		}
-		$this->type = $type;
-		
-		try {$this->value['title'] = $this->_getSingleChildElementText('TitleText');} catch(\Exception $e) { }
-		try {$this->value['subtitle'] = $this->_getSingleChildElementText('Subtitle');} catch(\Exception $e) { }
+		try {$this->type = $this->_getSingleChildElementText('SalesRightsType');} catch(\Exception $e) { }
+		try {$this->country = $this->_getSingleChildElementText('RightsCountry');} catch(\Exception $e) { }
+		try {$this->territory = $this->_getSingleChildElementText('RightsTerritory');} catch(\Exception $e) { }
 		
 		// Save memory.
 		$this->_forgetSource();
@@ -71,12 +62,16 @@ class TitleProductSubitem extends ProductSubitem {
 	 * @return string The contents of <IDValue>.
 	 */
 	public function getValue() {
-		return $this->value;
+		return $this->country ? $this->country : $this->territory;
+	}
+	
+	/*
+		Is For Sale
+	*/
+	public function isForSale(){
+		return $this->getType() == self::TYPE_FOR_SALE_EXCLUSIVE
+		|| $this->getType() == self::TYPE_FOR_SALE_NONEXCLUSIVE;
 	}
 
 };
 
-// a provider ONIX would foundn to use camelcase tag, so support this.
-class_alias('TitleProductSubitem', 'titleProductSubitem');
-
-?>
