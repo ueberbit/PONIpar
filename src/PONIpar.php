@@ -24,6 +24,10 @@ foreach (array(
 	'Product',
 	'ProductSubitem',
 		'ProductIdentifierProductSubitem',
+		'TitleProductSubitem',
+		'ContributorProductSubitem',
+		'ExtentProductSubitem',
+		'SupplyDetailProductSubitem'
 	'XMLHandler',
 ) as $part) {
 	require_once "$part.php";

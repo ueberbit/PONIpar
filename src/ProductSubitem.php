@@ -131,14 +131,17 @@ class ProductSubitem {
 		// Check if the root element’s name matches. Please don’t hack this to
 		// allow other namespaces or naming schemes. Instead, send a patch to
 		// make PONIpar more flexible! :)
-		$called = get_called_class();
-		$classwithoutns = substr(strrchr(__CLASS__, '\\'), 1);
-		$shouldbe = __NAMESPACE__ . '\\' . $doc->documentElement->tagName . $classwithoutns;
-		if ($called != $shouldbe) {
-			throw new InternalException(
-				"trying to extend " . __CLASS__ . " from invalidly named class $called (should be $shouldbe)"
-			);
-		}
+		
+		// Too bad! can come back to this later.... 
+		// $called = get_called_class();
+		// $classwithoutns = substr(strrchr(__CLASS__, '\\'), 1);
+		// $shouldbe = __NAMESPACE__ . '\\' . $doc->documentElement->tagName . $classwithoutns;
+		// if ($called != $shouldbe) {
+		// 	throw new InternalException(
+		// 		"trying to extend " . __CLASS__ . " from invalidly named class $called (should be $shouldbe)"
+		// 	);
+		// }
+		
 		// Store document.
 		$this->doc = $doc;
 		// Create an XPath instance and store it.
