@@ -1,5 +1,7 @@
 # PONIpar – PHP ONIX Parser
 
+![status](https://img.shields.io/badge/Status-Under%20Development-blue.svg)
+
 ## Main Features
 * stream based: can read ONIX files of arbitrary length, because it does not keep the whole file in memory
 * convenient variety of inputs: pass your data from a file, URL, stream, stdin or string
@@ -22,4 +24,4 @@ PONIpar requires at least PHP 5.3 with the “XML Parser” extension.
 The software is provided under the terms of the new (3-clause) BSD license. Please see the file LICENSE for details.
 
 ## Author
-PONIpar is authored by UEBERBIT GmbH (www.ueberbit.de).
+PONIpar is authored by [UEBERBIT GmbH](http://www.ueberbit.de) with additional development by [Blackstone Audio, Inc.](http://www.blackstoneaudio.com)
