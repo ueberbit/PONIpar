@@ -17,6 +17,12 @@ PONIpar is currently under development. It recognizes `<Product>` elements and c
 
 You _can_ use it in a production environment if you want to, but you still have to do manual XML parsing of nearly all the `<Product>` properties.
 
+## TODO
+
+* Convert to [Composer package](https://getcomposer.org/)
+* Add support for ONIX 3.0
+* Add more `ProductSubitems`
+
 ## Requirements
 PONIpar requires at least PHP 5.3 with the “XML Parser” extension.
 
