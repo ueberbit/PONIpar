@@ -1,7 +1,9 @@
 <?php
 
 declare(encoding='UTF-8');
-namespace PONIpar;
+namespace PONIpar\ProductSubitem;
+
+use PONIpar\ElementNotFoundException;
 
 /*
    This file is part of the PONIpar PHP Onix Parser Library.
@@ -20,7 +22,7 @@ namespace PONIpar;
  * everything starting with “get” should definitely be available for public
  * methods in subclasses.
  */
-class ProductSubitem {
+abstract class Subitem {
 
 	/**
 	 * A DOM implementation.

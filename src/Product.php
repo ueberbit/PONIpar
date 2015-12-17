@@ -93,7 +93,7 @@ class Product {
 			$elements = $this->xpath->query("/Product/$name");
 			// If we have a Subitem subclass for that element, create instances
 			// and return them.
-			$subitemclass = __NAMESPACE__ . "\\{$name}ProductSubitem";
+			$subitemclass = __NAMESPACE__ . "\\ProductSubitem\\{$name}";
 			if (class_exists($subitemclass)) {
 				foreach ($elements as $element) {
 					$subitems[] = new $subitemclass($element);

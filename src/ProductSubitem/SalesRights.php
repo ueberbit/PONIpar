@@ -1,7 +1,9 @@
 <?php
 
 declare(encoding='UTF-8');
-namespace PONIpar;
+namespace PONIpar\ProductSubitem;
+
+use PONIpar\ProductSubitem\Subitem;
 
 /*
    This file is part of the PONIpar PHP Onix Parser Library.
@@ -15,7 +17,7 @@ namespace PONIpar;
 /**
  * A <SalesRights> subitem.
  */
-class SalesRightsProductSubitem extends ProductSubitem {
+class SalesRights extends Subitem {
 	
 	// TODO - add more type constants
 	const TYPE_UNKNOWN = "00";

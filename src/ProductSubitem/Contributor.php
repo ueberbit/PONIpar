@@ -1,7 +1,9 @@
 <?php
 
 declare(encoding='UTF-8');
-namespace PONIpar;
+namespace PONIpar\ProductSubitem;
+
+use PONIpar\ProductSubitem\Subitem;
 
 /*
    This file is part of the PONIpar PHP Onix Parser Library.
@@ -13,9 +15,9 @@ namespace PONIpar;
 */
 
 /**
- * A <ProductIdentifier> subitem.
+ * A <Contributor> subitem.
  */
-class ContributorProductSubitem extends ProductSubitem {
+class Contributor extends Subitem {
 
 	// Mapping of constants to types.
 	const ROLE_AUTHOR  		= 'A01';
@@ -35,9 +37,9 @@ class ContributorProductSubitem extends ProductSubitem {
 	protected $value = null;
 
 	/**
-	 * Create a new ProductIdentifier.
+	 * Create a new Contributor.
 	 *
-	 * @param mixed $in The <ProductIdentifier> DOMDocument or DOMElement.
+	 * @param mixed $in The <Contributor> DOMDocument or DOMElement.
 	 */
 	public function __construct($in) {
 		
