@@ -27,6 +27,8 @@ foreach (array(
 		'ProductSubitem/Title',
 		'ProductSubitem/Contributor',
 		'ProductSubitem/Extent',
+		'ProductSubitem/Subject',
+		'ProductSubitem/OtherText',
 		'ProductSubitem/SupplyDetail',
 		'ProductSubitem/SalesRights',
 	'XMLHandler',

@@ -65,11 +65,12 @@ class ProductIdentifier extends Subitem {
 		$this->type = $type;
 		// Retrieve the type name (if proprietary type).
 		if ($type == self::TYPE_PROPRIETARY) {
-			$typename = $this->_getSingleChildElementText('IDTypeName');
-			$this->typename = $typename;
+			try {$this->typename = $this->_getSingleChildElementText('IDTypeName');} catch(\Exception $e) { }
 		} // TODO: else: forbid IDTypeName
+		
 		// Get the value.
 		$this->value = $this->_getSingleChildElementText('IDValue');
+		
 		// Save memory.
 		$this->_forgetSource();
 	}

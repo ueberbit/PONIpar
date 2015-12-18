@@ -45,6 +45,11 @@ class SalesRights extends Subitem {
 		try {$this->country = $this->_getSingleChildElementText('RightsCountry');} catch(\Exception $e) { }
 		try {$this->territory = $this->_getSingleChildElementText('RightsTerritory');} catch(\Exception $e) { }
 		
+		// try 3.0
+		if( !$this->country && !$this->territory ){
+			try {$this->country = $this->_getSingleChildElementText('Territory/CountriesIncluded');} catch(\Exception $e) { }
+		}
+		
 		// Save memory.
 		$this->_forgetSource();
 	}

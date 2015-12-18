@@ -4,6 +4,8 @@ declare(encoding='UTF-8');
 namespace PONIpar\ProductSubitem;
 
 use PONIpar\ElementNotFoundException;
+use PONIpar\TooManyElementsFoundException;
+use PONIpar\InternalException;
 
 /*
    This file is part of the PONIpar PHP Onix Parser Library.
@@ -135,9 +137,11 @@ abstract class Subitem {
 		// make PONIpar more flexible! :)
 		
 		// Too bad! can come back to this later.... 
+		// This kind of checking doesn't work well with the 3.0 support I've added.
+		// It seems to me that making additional classes for 3.0 would add a lot of duplicate code
 		// $called = get_called_class();
 		// $classwithoutns = substr(strrchr(__CLASS__, '\\'), 1);
-		// $shouldbe = __NAMESPACE__ . '\\' . $doc->documentElement->tagName . $classwithoutns;
+		// $shouldbe = __NAMESPACE__ . '\\' . $doc->documentElement->tagName;
 		// if ($called != $shouldbe) {
 		// 	throw new InternalException(
 		// 		"trying to extend " . __CLASS__ . " from invalidly named class $called (should be $shouldbe)"

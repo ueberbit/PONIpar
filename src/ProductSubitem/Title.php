@@ -15,7 +15,7 @@ use PONIpar\ProductSubitem\Subitem;
 */
 
 /**
- * A <ProductIdentifier> subitem.
+ * A <Title> subitem.
  */
 class Title extends Subitem {
 	
@@ -36,9 +36,9 @@ class Title extends Subitem {
 	);
 
 	/**
-	 * Create a new ProductIdentifier.
+	 * Create a new Title.
 	 *
-	 * @param mixed $in The <ProductIdentifier> DOMDocument or DOMElement.
+	 * @param mixed $in The <Title> DOMDocument or DOMElement.
 	 */
 	public function __construct($in) {
 		parent::__construct($in);
@@ -53,6 +53,12 @@ class Title extends Subitem {
 		
 		try {$this->value['title'] = $this->_getSingleChildElementText('TitleText');} catch(\Exception $e) { }
 		try {$this->value['subtitle'] = $this->_getSingleChildElementText('Subtitle');} catch(\Exception $e) { }
+		
+		// try 3.0 structure
+		if( !$this->value['title'] ){
+			try {$this->value['title'] = $this->_getSingleChildElementText('TitleElement/TitleText');} catch(\Exception $e) { }
+			try {$this->value['subtitle'] = $this->_getSingleChildElementText('TitleElement/Subtitle');} catch(\Exception $e) { }
+		}
 		
 		// Save memory.
 		$this->_forgetSource();
@@ -79,6 +85,5 @@ class Title extends Subitem {
 };
 
 // a provider ONIX would foundn to use camelcase tag, so support this.
-class_alias('TitleProductSubitem', 'titleProductSubitem');
+class_alias('Title', 'Title');
 
-?>

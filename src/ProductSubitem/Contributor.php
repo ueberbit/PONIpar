@@ -102,4 +102,3 @@ class Contributor extends Subitem {
 
 }
 
-?>
