@@ -15,21 +15,26 @@ use PONIpar\ProductSubitem\Subitem;
 */
 
 /**
- * A <ProductIdentifier> subitem.
+ * A <Extent> subitem.
  */
 class Extent extends Subitem {
 	
 	// TODO - add more type constants
+	// list 23
 	const TYPE_PAGE_COUNT 		= "00";
 	const TYPE_NUMBER_OF_WORDS	= "02";
 	const TYPE_DURATION			= "09";
 	
 	// TODO - add more unit constants
+	// list 24
 	const UNIT_WORDS 	= "02";
 	const UNIT_HOURS 	= "04";
 	const UNIT_MINUTES	= "05";
 	const UNIT_SECONDS	= "06";
 	const UNIT_TRACKS	= "11";
+	const UNIT_HHH		= "14"; // hours with leading zeros
+	const UNIT_HHHMM	= "15"; // hours and minutes
+	const UNIT_HHHMMSS	= "16"; // hours minutes seconds
 
 	/**
 	 * The type of this product identifier.
@@ -47,9 +52,9 @@ class Extent extends Subitem {
 	protected $value = null;
 
 	/**
-	 * Create a new ProductIdentifier.
+	 * Create a new Extent.
 	 *
-	 * @param mixed $in The <ProductIdentifier> DOMDocument or DOMElement.
+	 * @param mixed $in The <Extent> DOMDocument or DOMElement.
 	 */
 	public function __construct($in) {
 		parent::__construct($in);
@@ -125,8 +130,24 @@ class Extent extends Subitem {
 		
 		// make sure value is in seconds
 		switch($this->getUnit()){
+			
 			case self::UNIT_MINUTES: $val = $val * 60; break;
-			case self::UNIT_HOURS: $val = $val * 60 * 60; break;
+			
+			case self::UNIT_HOURS:
+			case self::UNIT_HHH: $val = intval($val) * 60 * 60; break;
+			
+			case self::UNIT_HHHMM:
+				preg_match("/(\d{3})(\d{2})/", $val, $matches);
+				list($val, $h, $m) = $matches;
+				$val = (intval($m)*60) + (intval($h)*60*60);
+				break;
+		
+			case self::UNIT_HHHMMSS:
+				preg_match("/(\d{3})(\d{2})(\d{2})/", $val, $matches);
+				list($val, $h, $m, $s) = $matches;
+				$val = intval($s) + (intval($m)*60) + (intval($h)*60*60);
+				break;
+				
 			default: break;
 		}
 		
