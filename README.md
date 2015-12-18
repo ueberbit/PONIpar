@@ -1,6 +1,7 @@
 # PONIpar – PHP ONIX Parser
 
-![status](https://img.shields.io/badge/Status-Under%20Development-blue.svg)
+[![status](https://img.shields.io/badge/status-Under%20Development-blue.svg)](https://github.com/kjantzer/PONIpar/tree/master)
+[![version](https://img.shields.io/packagist/v/kjantzer/PONIpar.svg)](https://packagist.org/packages/kjantzer/ponipar)
 
 ## Main Features
 * stream based: can read ONIX files of arbitrary length, because it does not keep the whole file in memory
