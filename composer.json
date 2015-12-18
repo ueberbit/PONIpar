@@ -1,5 +1,5 @@
 {
-    "name": "kjantzer/PONIpar",
+    "name": "kjantzer/ponipar",
     "description": "Stream-based PHP ONIX parser library.",
     "version": "0.1.0",
     "type": "library",
