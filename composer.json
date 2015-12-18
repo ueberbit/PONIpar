@@ -1,7 +1,10 @@
 {
     "name": "kjantzer/PONIpar",
-    "type": "library",
     "description": "Stream-based PHP ONIX parser library.",
+    "version": "0.1.0",
+    "type": "library",
+    "keywords": ["ONIX", "XML", "parser", "editeur"],
+    "homepage": "https://github.com/kjantzer/PONIpar",
     "authors": [
         {
             "name": " Tim Weber",
@@ -28,6 +31,8 @@
 				"src/ProductSubitem/Title.php",
 				"src/ProductSubitem/Contributor.php",
 				"src/ProductSubitem/Extent.php",
+                "src/ProductSubitem/Subject.php",
+                "src/ProductSubitem/OtherText.php",
 				"src/ProductSubitem/SupplyDetail.php",
 				"src/ProductSubitem/SalesRights.php",
 			"src/XMLHandler.php"
