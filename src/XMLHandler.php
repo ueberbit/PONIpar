@@ -439,6 +439,11 @@ class XMLHandler {
 		'series' => 'Series',
 		'othertext' => 'OtherText'
 	);
+	
+	/**
+	 * The version of ONIX we are parsing
+	 */
+	protected $version = null;
 
 	/**
 	 * Whether the document that’s being parsed uses short tags or not.
@@ -515,6 +520,12 @@ class XMLHandler {
 		$level = count($this->openelements);
 		// If this is the root element, set whether short tags are used or not.
 		if ($level == 0) {
+			
+			if( isset($attrs['release']) )
+				$this->version = $attrs['release'];
+			else
+				$this->version = '2.1';
+			
 			switch ($name) {
 				case 'ONIXMessage':
 					$this->shorttags = false;
@@ -614,7 +625,7 @@ class XMLHandler {
 	 */
 	protected function handleProduct($dom) {
 		if ($this->productHandler) {
-			$product = new Product($dom);
+			$product = new Product($dom, $this->version);
 			call_user_func($this->productHandler, $product);
 		}
 	}
