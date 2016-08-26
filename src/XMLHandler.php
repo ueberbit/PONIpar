@@ -260,6 +260,7 @@ class XMLHandler {
 		'g343' => 'PrizeJury',
 		'g126' => 'PrizeName',
 		'g127' => 'PrizeYear',
+		'x503' => 'PrizeStatement',
 		'product' => 'Product',
 		'j396' => 'ProductAvailability',
 		'productclassification' => 'ProductClassification',

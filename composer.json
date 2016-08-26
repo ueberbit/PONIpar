@@ -33,6 +33,7 @@
 				"src/ProductSubitem/Extent.php",
                 "src/ProductSubitem/Subject.php",
                 "src/ProductSubitem/OtherText.php",
+                "src/ProductSubitem/Prize.php",
 				"src/ProductSubitem/SupplyDetail.php",
 				"src/ProductSubitem/SalesRights.php",
 			"src/XMLHandler.php"
