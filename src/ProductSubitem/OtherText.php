@@ -25,6 +25,7 @@ class OtherText extends Subitem {
 	const TYPE_MAIN_DESCRIPTION = "01";
 	const TYPE_SHORT_DESCRIPTION = "02"; 
 	const TYPE_LONG_DESCRIPTION = "03";
+	const TYPE_REVIEW_QUOTE = "08";
 	const TYPE_BIOGRAPHICAL_NOTE = "13";
 	
 	// List 34
@@ -37,6 +38,7 @@ class OtherText extends Subitem {
 	protected $type = null;
 	protected $format = null;
 	protected $value = null;
+	protected $author = null;
 
 	/**
 	 * Create a new OtherText.
@@ -54,6 +56,9 @@ class OtherText extends Subitem {
 		
 		try {$this->format = $this->_getSingleChildElementText('TextFormat');} catch(\Exception $e) { }
 		try {$this->value = $this->_getSingleChildElementText('Text');} catch(\Exception $e) { }
+		try {$this->author = $this->_getSingleChildElementText('TextAuthor');} catch(\Exception $e) { }
+		
+		$this->cleanValue();
 		
 		// Save memory.
 		$this->_forgetSource();
@@ -86,5 +91,19 @@ class OtherText extends Subitem {
 		return $this->value;
 	}
 
+	/**
+	 * Retrieve the actual value of this text.
+	 *
+	 * @return string The contents of <TextAuthor>.
+	 */
+	public function getAuthor() {
+		return $this->author;
+	}
+
+	private function cleanValue(){
+		if( !$this->value ) return;
+		$this->value = str_replace("<![CDATA[","",$this->value);
+		$this->value = preg_replace("/\]\]>*$/","",$this->value);
+	}
 };
 
