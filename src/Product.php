@@ -29,6 +29,26 @@ class Product {
 		'ProductIdentifier' => array('min' => 1),
 	);
 	
+	protected static $productStatus = array(
+		"00" => "Unspecified",
+		"01" => "Cancelled",
+		"02" => "Forthcoming",
+		"03" => "Postponed indefinitely",
+		"04" => "Active",
+		"05" => "No longer our product",
+		"06" => "Out of stock indefinitely",
+		"07" => "Out of print",
+		"08" => "Inactive",
+		"09" => "Unknown",
+		"10" => "Remaindered",
+		"11" => "Withdrawn from sale",
+		"12" => "Not available in this market",
+		"13" => "Active, but not sold separately",
+		"14" => "Active, with market restrictions",
+		"15" => "Recalled",
+		"16" => "Temporarily withdrawn from sale"
+	);
+	
 	/**
 	 * The version of ONIX we are parsing
 	 */
@@ -182,8 +202,13 @@ class Product {
 			return $this->get('PublishingStatus')[0]->nodeValue;
 	}
 	
+	public function publishingStatusString(){
+		$status = $this->PublishingStatus();
+		return isset(self::$productStatus[$status]) ? self::$productStatus[$status] : 'Unknown';
+	}
+	
 	public function isActive(){
-		return $this->publishingStatus() == '04'; // 'Active' (list 64)
+		return in_array($this->publishingStatus(),['04','02']); // 'Active' and `Forthcoming` (list 64)
 	}
 	
 	/**
@@ -313,7 +338,57 @@ class Product {
 		return $description;
 	}
 	
+	/**
+	* Get Review Quotes
+	*
+	* @return array
+	*/
+	public function getReviewQuotes(){
+
+		$texts = $this->getTexts();
+		$quotes = [];
+
+		foreach($texts as $text){
+			if( $text->getType() == OtherText::TYPE_REVIEW_QUOTE )
+				$quotes[] = [
+					'text' => $text->getValue(),
+					'author' => $text->getAuthor()
+				];
+		}
+
+		return $quotes;
+	}
 	
+	/**
+	* Get Bio Notes
+	*
+	* @return array
+	*/
+	public function getBiograhpicalNotes(){
+
+		$texts = $this->getTexts();
+		$notes = [];
+
+		foreach($texts as $text){
+			if( $text->getType() == OtherText::TYPE_BIOGRAPHICAL_NOTE )
+				$notes[] = $text->getValue();
+		}
+
+		return $notes;
+	}
+
+	public function getPrizes(){
+		if( $this->version >= '3.0' )
+			return $this->get('CollateralDetail/Prize', 'Prize');
+		else
+			return $this->get('Prize');
+	}
+
+	public function getPrizesData(){
+		return array_map(function($award){ return $award->getData(); }, $this->getPrizes());
+	}
+
+
 	/**
 	* Get Edition
 	* 
@@ -337,6 +412,32 @@ class Product {
 			return $this->get('PublishingDetail/PublishingDate/Date')[0]->nodeValue;
 		else
 			return $this->get('PublicationDate')[0]->nodeValue;
+	}
+	
+	/**
+	* Get Publish Date
+	* 
+	* @return string
+	*/
+	public function getFirstImprintName(){
+		// @TODO: many imprints can be set, we should support grabbing them all
+		if( $this->version >= '3.0' )
+			return $this->get('PublishingDetail/Imprint/ImprintName')[0]->nodeValue;
+		else
+			return $this->get('Imprint/ImprintName')[0]->nodeValue;
+	}
+	
+	/**
+	* Get First Publisher Name
+	* 
+	* @return string
+	*/
+	public function getFirstPublisherName(){
+		// @TODO: many publishers can be set, we should support grabbing them all
+		if( $this->version >= '3.0' )
+			return $this->get('PublishingDetail/Publisher/PublisherName')[0]->nodeValue;
+		else
+			return $this->get('Publisher/PublisherName')[0]->nodeValue;
 	}
 	
 	/**
@@ -374,24 +475,66 @@ class Product {
 		
 		return $year.($name?' '.$name:'');
 	}
-	
+
 	/**
-	* Get Main Subject BISAC
-	* 
-	* @return string Returns the main subject category code 
-	*/
+	 * Get Main Subject BISAC
+	 *
+	 * @return string Returns the main subject category code
+	 */
 	public function getMainSubjectBISAC(){
 		if( $this->version >= '3.0'){
 			$subjects = $this->get('DescriptiveDetail/Subject', 'Subject');
 			foreach($subjects as $subject){
-				if( $subject->getScheme() == Subject::SCHEME_BISAC_SUJECT_HEADING ){
-					if( !$data['bisac'] || $subject->isMainSubject() )
+				if( $subject->getScheme() == Subject::SCHEME_BISAC_SUBJECT_HEADING ){
+					if( $subject->isMainSubject() )
 						return $subject->getValue();
 				}
 			}
 		}else{
 			return $this->get('BASICMainSubject')[0]->nodeValue;
 		}
+	}
+
+	/**
+	 * Get Other Subject BISACs
+	 *
+	 * @return array Returns array of other "non-main" subject category
+	 */
+	public function getOtherSubjectBISACs(){
+		if ($this->version >= '3.0')
+			$subjects = $this->get('DescriptiveDetail/Subject', 'Subject');
+		else
+			$subjects = $this->get('Subject', 'Subject');
+
+		$others = [];
+
+		foreach($subjects as $subject){
+			if( $subject->getScheme() == Subject::SCHEME_BISAC_SUBJECT_HEADING ){
+				if( !$subject->isMainSubject() )
+					$others[] = $subject->getValue();
+			}
+		}
+
+		return $others;
+	}
+
+	/**
+	 * Get Keywords
+	 *
+	 * @return string Returns the keywords
+	 */
+	public function getKeywords()
+	{
+		if ($this->version >= '3.0')
+			$subjects = $this->get('DescriptiveDetail/Subject', 'Subject');
+		else
+			$subjects = $this->get('Subject', 'Subject');
+
+		foreach ($subjects as $subject) {
+			if ($subject->getScheme() == Subject::SCHEME_KEYWORDS)
+				return $subject->getText();
+		}
+		return "";
 	}
 }
 
