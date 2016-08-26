@@ -446,6 +446,11 @@ class XMLHandler {
 	protected $version = null;
 
 	/**
+	 * The date the ONIX was sent (int Unix timestamp)
+	 */
+	protected $sentDate = null;
+
+	/**
 	 * Whether the document that’s being parsed uses short tags or not.
 	 */
 	protected $shorttags = null;
@@ -610,6 +615,12 @@ class XMLHandler {
 	 * @return null
 	 */
 	protected function handleText($parser, $text) {
+
+		// if currently on the <m182> (SentDate) tag, save the value
+		if( $this->openelements && $this->openelements[count($this->openelements)-1] == 'm182' ){
+			$this->sentDate = $text ? strtotime($text) : null;
+		}
+
 		// If we’re in a product, create and append a text node.
 		if ($this->productDOM) {
 			$text = $this->productDOM->createTextNode($text);
@@ -751,6 +762,24 @@ class XMLHandler {
 		}
 		$this->productHandler = $cb;
 		return $this;
+	}
+
+	/**
+	 * Get Version of ONIX being parsed
+	 *
+	 * @return string
+	 */
+	public function getVersion(){
+		return $this->version;
+	}
+
+	/**
+	 * Get Sent Date of ONIX being parsed
+	 *
+	 * @return datetime
+	 */
+	public function getSentDate(){
+		return $this->sentDate;
 	}
 
 }
