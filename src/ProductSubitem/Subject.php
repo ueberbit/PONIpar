@@ -3,8 +3,6 @@
 declare(encoding='UTF-8');
 namespace PONIpar\ProductSubitem;
 
-use PONIpar\ProductSubitem\Subitem;
-
 /*
    This file is part of the PONIpar PHP Onix Parser Library.
    Copyright (c) 2012, [di] digitale informationssysteme gmbh
@@ -21,7 +19,7 @@ class Subject extends Subitem {
 	
 	// TODO - add more constants
 	// list 27
-	const SCHEME_BISAC_SUJECT_HEADING = "10";
+	const SCHEME_BISAC_SUBJECT_HEADING = "10";
 	const SCHEME_KEYWORDS = "20";
 
 	/**
@@ -33,6 +31,11 @@ class Subject extends Subitem {
 	 * The value (code) of this subject
 	 */
 	protected $value = null;
+
+	/**
+	 * The text (keyword) of this subject
+	 */
+	protected $text = null;
 	
 	protected $mainSubject = false;
 
@@ -46,7 +49,11 @@ class Subject extends Subitem {
 		
 		try{ $this->scheme = $this->_getSingleChildElementText('SubjectSchemeIdentifier'); } catch(\Exception $e) { }
 		try{ $this->value = $this->_getSingleChildElementText('SubjectCode'); } catch(\Exception $e) { }
-		
+		try {
+			$this->text = $this->_getSingleChildElementText('SubjectHeadingText');
+		} catch (\Exception $e) {
+		}
+
 		try{ $this->_getSingleChildElementText('MainSubject'); $this->mainSubject = true; } catch(\Exception $e) {
 			$this->mainSubject = false;
 		}
@@ -65,12 +72,22 @@ class Subject extends Subitem {
 	}
 
 	/**
-	 * Retrieve the value of 
+	 * Retrieve the value of
 	 *
 	 * @return string The contents of <SubjectCode>.
 	 */
 	public function getValue() {
 		return $this->value;
+	}
+
+	/**
+	 * Retrieve the text of
+	 *
+	 * @return string The contents of <SubjectHeadingText>.
+	 */
+	public function getText()
+	{
+		return $this->text;
 	}
 
 	/**
