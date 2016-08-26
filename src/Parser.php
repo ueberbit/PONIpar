@@ -178,6 +178,24 @@ class Parser {
 		return $this->useStream($fh);
 	}
 
+	/**
+	 * Get Version of ONIX being parsed
+	 *
+	 * @return string
+	 */
+	public function getVersion(){
+		return $this->xmlhandler->getVersion();
+	}
+
+	/**
+	 * Get Sent Date of ONIX being parsed
+	 *
+	 * @return datetime
+	 */
+	public function getSentDate(){
+		return $this->xmlhandler->getSentDate();
+	}
+
 }
 
 ?>
