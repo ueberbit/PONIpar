@@ -3,8 +3,6 @@
 declare(encoding='UTF-8');
 namespace PONIpar\ProductSubitem;
 
-use PONIpar\ProductSubitem\Subitem;
-
 /*
    This file is part of the PONIpar PHP Onix Parser Library.
    Copyright (c) 2012, [di] digitale informationssysteme gmbh
@@ -23,6 +21,7 @@ class SupplyDetail extends Subitem {
 		'IP' => 'Available',
 		'NP' => 'Not yet available',
 		'OP' => 'Terminated',
+		'OR' => 'Replaced',
 		'AB' => 'Cancelled',
 		'CS' => 'Contact supplier' 
 	);
@@ -30,6 +29,11 @@ class SupplyDetail extends Subitem {
 	protected $product_availabilities = array(
 		'20' => 'Available',
 		'10' => 'Not yet available',
+		'11' => 'Awaiting stock',
+		'21' => 'In stock',
+		'40' => 'Not available',
+		'41' => 'Replaced',
+		'43' => 'No longer supplied',
 		'51' => 'Terminated',
 		'01' => 'Cancelled',
 		'99' => 'Contact supplier'
@@ -103,16 +107,16 @@ class SupplyDetail extends Subitem {
 	 * @return string The contents of <ProductIDType>.
 	 */
 	public function getAvailability() {
-		
+
 		if( $this->product_availability  )
 			return isset($this->product_availabilities[$this->product_availability])
 					? $this->product_availabilities[$this->product_availability]
-					: null;
+					: 'Unknown';
 			
-		if( $this->$availability_code  )
-			return isset($this->availability_codes[$this->product_availability])
-					? $this->availability_codes[$this->product_availability]
-					: null;
+		if( $this->availability_code  )
+			return isset($this->availability_codes[$this->availability_code])
+					? $this->availability_codes[$this->availability_code]
+					: 'Unknown';
 		
 		return null;
 	}
