@@ -58,6 +58,10 @@ class Contributor extends Subitem {
 		try {$this->value['SequenceNumber'] = $this->_getSingleChildElementText('SequenceNumber');} catch(\Exception $e) { }
 		try {$this->value['NamesBeforeKey'] = $this->_getSingleChildElementText('NamesBeforeKey');} catch(\Exception $e) { }
 		try {$this->value['KeyNames'] = $this->_getSingleChildElementText('KeyNames');} catch(\Exception $e) { }
+		try {$this->value['Bio'] = $this->_getSingleChildElementText('BiographicalNote');} catch(\Exception $e) { }
+
+		if( $this->value['Bio'] )
+			$this->value['Bio'] = $this->clean($this->value['Bio']);
 		
 		// Save memory.
 		$this->_forgetSource();
@@ -98,6 +102,12 @@ class Contributor extends Subitem {
 	 */
 	public function getValue() {
 		return $this->value;
+	}
+
+	private function clean($str){
+		$str = str_replace("<![CDATA[","",$str);
+		$str = preg_replace("/\]\]>*$/","",$str);
+		return $str;
 	}
 
 }
