@@ -1,10 +1,11 @@
 <?php
 
-declare(encoding='UTF-8');
 namespace PONIpar;
 
-use PONIpar\ProductSubitem\OtherText;
 use PONIpar\ProductSubitem\Subject;
+use PONIpar\Exceptions\XMLException;
+use PONIpar\ProductSubitem\OtherText;
+use PONIpar\Exceptions\ElementNotFoundException;
 
 /*
    This file is part of the PONIpar PHP Onix Parser Library.
@@ -28,7 +29,7 @@ class Product {
 	protected static $allowedSubitems = array(
 		'ProductIdentifier' => array('min' => 1),
 	);
-	
+
 	protected static $productStatus = array(
 		"00" => "Unspecified",
 		"01" => "Cancelled",
@@ -48,7 +49,7 @@ class Product {
 		"15" => "Recalled",
 		"16" => "Temporarily withdrawn from sale"
 	);
-	
+
 	/**
 	 * The version of ONIX we are parsing
 	 */
@@ -77,9 +78,9 @@ class Product {
 	 * @param DOMDocument $dom The DOM with <Product> as its root.
 	 */
 	public function __construct(\DOMDocument $dom, $version) {
-		
+
 		$this->version = $version;
-		
+
 		// Save the DOM.
 		$this->dom = $dom;
 		// Get an XPath instance for that DOM.
@@ -117,15 +118,15 @@ class Product {
 	 *                DOMElement objects.
 	 */
 	public function get($name, $classname=null) {
-		
+
 		$classname = $classname ? $classname : $name;
-		
+
 		// If we don’t already have the items in the cache, create them.
 		if (!isset($this->subitems[$name])) {
 			$subitems = array();
 			// Retrieve all matching children.
 			$elements = $this->xpath->query("/Product/$name");
-			
+
 			// If we have a Subitem subclass for that element, create instances
 			// and return them.
 			$subitemclass = __NAMESPACE__ . "\\ProductSubitem\\{$classname}";
@@ -143,7 +144,7 @@ class Product {
 		}
 		return $this->subitems[$name];
 	}
-	
+
 	/**
 	* Gets version of ONIX being parsed
 	*/
@@ -186,11 +187,11 @@ class Product {
 		}
 		throw new ElementNotFoundException("no identifier of type $type found");
 	}
-	
-	
+
+
 	/**
 	* Get Edition
-	* 
+	*
 	* See list 64 for status codes
 	*
 	* @return string
@@ -201,19 +202,19 @@ class Product {
 		else
 			return $this->get('PublishingStatus')[0]->nodeValue;
 	}
-	
+
 	public function publishingStatusString(){
 		$status = $this->PublishingStatus();
 		return isset(self::$productStatus[$status]) ? self::$productStatus[$status] : 'Unknown';
 	}
-	
+
 	public function isActive(){
 		return in_array($this->publishingStatus(),['04','02']); // 'Active' and `Forthcoming` (list 64)
 	}
-	
+
 	/**
 	* Get Product Form
-	* 
+	*
 	* See list 150 for form codes
 	*
 	* @return string
@@ -221,10 +222,51 @@ class Product {
 	public function getProductForm(){
 		if( $this->version >= '3.0' )
 			return $this->get('DescriptiveDetail/ProductForm')[0]->nodeValue;
-		else
+		else {
 			return $this->get('ProductForm')[0]->nodeValue;
+		}
 	}
-	
+
+	/**
+	 * Get ProductFormDetail
+	 *
+	 * List 175
+	 *
+	 * @return string
+	 */
+	public function getProductFormDetail()
+	{
+		if($this->version >= '3.0') {
+			return $this->get('DescriptiveDetail/ProductFormDetail')[0]->nodeValue;
+		} else {
+			return $this->get('ProductFormDetail')[0]->nodeValue;
+		}
+	}
+
+	public function getProductFormFeature()
+	{
+	    if($this->version >= '3.0') {
+			return $this->get('DescriptiveDetail/ProductFormFeature', 'ProductFormFeature');
+		}
+		return null;
+	}
+
+	/**
+	 * Get EpubTechnicalProtection
+	 *
+	 * List 144
+	 *
+	 * @return string
+	 */
+	public function getEpubTechnicalProtection()
+	{
+		if($this->version >= '3.0') {
+			return $this->get('DescriptiveDetail/EpubTechnicalProtection')[0]->nodeValue;
+		} else {
+			return $this->get('EpubTechnicalProtection')[0]->nodeValue;
+		}
+	}
+
 	/**
 	* Get Titles
 	*
@@ -236,10 +278,10 @@ class Product {
 		else
 			return $this->get('Title');
 	}
-	
+
 	/**
-	* Get Edition
-	* 
+	* Get Contributors
+	*
 	* @return array of Contributor objects
 	*/
 	public function getContributors(){
@@ -248,7 +290,7 @@ class Product {
 		else
 			return $this->get('Contributor');
 	}
-	
+
 	/**
 	* Get Supply Details
 	*
@@ -260,7 +302,7 @@ class Product {
 		else
 			return $this->get('SupplyDetail');
 	}
-	
+
 	/**
 	* Get Sales Rights
 	*
@@ -272,35 +314,35 @@ class Product {
 		else
 			return $this->get('SalesRights');
 	}
-	
+
 	/**
 	* Get For Sale Rights
 	*
 	* @return string Region of list of countries this product is for sale in
 	*/
 	public function getForSaleRights(){
-		
+
 		$sales_rights = $this->getSalesRights();
 		$rights = '';
-		
+
 		if( count($sales_rights) == 1 ){
 			$rights = $sales_rights[0]->getValue();
 		}else{
-			
+
 			foreach($sales_rights as $sr){
 				if( $sr->isForSale() )
 					$rights .= ' '.$sr->getValue();
 			}
-			
+
 			$rights = trim($rights);
 			$rights = explode(' ', $rights);
 			sort($rights);
 			$rights = implode(' ', $rights);
 		}
-		
+
 		return $rights;
 	}
-	
+
 	/**
 	* Get Texts
 	*
@@ -312,32 +354,32 @@ class Product {
 		else
 			return $this->get('OtherText');
 	}
-	
+
 	/**
 	* Get Main Description
-	* 
+	*
 	* If no main description is found, it will return the first in the list,
 	* unless `$strict` is set to `true`
-	* 
+	*
 	* @return string
 	*/
 	public function getMainDescription($strict=false){
-		
+
 		$texts = $this->getTexts();
 		$description = '';
-		
+
 		foreach($texts as $text){
-			
+
 			if( $text->getType() == OtherText::TYPE_MAIN_DESCRIPTION )
 				$description = $text->getValue();
-			
+
 			elseif( !$description && $strict !== true )
 				$description = $text->getValue();
 		}
-		
+
 		return $description;
 	}
-	
+
 	/**
 	* Get Review Quotes
 	*
@@ -358,7 +400,7 @@ class Product {
 
 		return $quotes;
 	}
-	
+
 	/**
 	* Get Bio Notes
 	*
@@ -391,7 +433,7 @@ class Product {
 
 	/**
 	* Get Edition
-	* 
+	*
 	* @return string
 	*/
 	public function getEdition(){
@@ -400,10 +442,10 @@ class Product {
 		else
 			return $this->get('EditionTypeCode')[0]->nodeValue;
 	}
-	
+
 	/**
 	* Get Publish Date
-	* 
+	*
 	* @return string
 	*/
 	public function getPublishDate(){
@@ -413,10 +455,10 @@ class Product {
 		else
 			return $this->get('PublicationDate')[0]->nodeValue;
 	}
-	
+
 	/**
 	* Get Publish Date
-	* 
+	*
 	* @return string
 	*/
 	public function getFirstImprintName(){
@@ -426,10 +468,10 @@ class Product {
 		else
 			return $this->get('Imprint/ImprintName')[0]->nodeValue;
 	}
-	
+
 	/**
 	* Get First Publisher Name
-	* 
+	*
 	* @return string
 	*/
 	public function getFirstPublisherName(){
@@ -439,10 +481,10 @@ class Product {
 		else
 			return $this->get('Publisher/PublisherName')[0]->nodeValue;
 	}
-	
+
 	/**
 	* Get Copyright Year
-	* 
+	*
 	* @return string
 	*/
 	public function getCopyrightYear(){
@@ -455,24 +497,24 @@ class Product {
 			return $year;
 		}
 	}
-	
-	
+
+
 	/**
 	* Get Copyright Statement
-	* 
+	*
 	* @return string
 	*/
 	public function getCopyrightStatement(){
-		
+
 		$prefix = $this->version >= '3.0' ? 'PublishingDetail/CopyrightStatement' : 'CopyrightStatement';
-		
+
 		$name = $this->get($prefix.'/CopyrightOwner/CorporateName')[0]->nodeValue;
-			
+
 		if( !$name )
 			$name = $this->get($prefix.'/CopyrightOwner/PersonName')[0]->nodeValue;
-		
+
 		$year = $this->getCopyrightYear();
-		
+
 		return $year.($name?' '.$name:'');
 	}
 

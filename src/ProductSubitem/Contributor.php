@@ -1,6 +1,5 @@
 <?php
 
-declare(encoding='UTF-8');
 namespace PONIpar\ProductSubitem;
 
 use PONIpar\ProductSubitem\Subitem;
@@ -42,17 +41,17 @@ class Contributor extends Subitem {
 	 * @param mixed $in The <Contributor> DOMDocument or DOMElement.
 	 */
 	public function __construct($in) {
-		
+
 		parent::__construct($in);
-		
+
 		// Retrieve and check the type.
 		$this->role = $this->_getSingleChildElementText('ContributorRole');
-		
+
 		// Get the value.
 		$this->value = array();
-		
+
 		$this->value['ContributorRole'] = $this->role;
-		
+
 		try {$this->value['PersonName'] = $this->_getSingleChildElementText('PersonName');} catch(\Exception $e) { }
 		try {$this->value['PersonNameInverted'] = $this->_getSingleChildElementText('PersonNameInverted');} catch(\Exception $e) { }
 		try {$this->value['SequenceNumber'] = $this->_getSingleChildElementText('SequenceNumber');} catch(\Exception $e) { }
@@ -60,29 +59,29 @@ class Contributor extends Subitem {
 		try {$this->value['KeyNames'] = $this->_getSingleChildElementText('KeyNames');} catch(\Exception $e) { }
 		try {$this->value['Bio'] = $this->_getSingleChildElementText('BiographicalNote');} catch(\Exception $e) { }
 
-		if( $this->value['Bio'] )
+		if(isset($this->value['Bio']))
 			$this->value['Bio'] = $this->clean($this->value['Bio']);
-		
+
 		// Save memory.
 		$this->_forgetSource();
 	}
-	
+
 	/*
 		Get Name
 	*/
 	public function getName(){
-		
+
 		// already found
 		if( $this->name )
 			return $this->name();
-			
+
 		if( $this->getValue()['PersonName'] )
 			return $this->name = $this->getValue()['PersonName'];
-			
+
 		if( $this->getValue()['PersonNameInverted'] ){
 			return $this->name = preg_replace("/^(.+), (.+)$/", "$2 $1", $this->getValue()['PersonNameInverted']);
 		}
-		
+
 		return $this->name;
 	}
 

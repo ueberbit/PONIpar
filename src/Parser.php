@@ -1,7 +1,11 @@
 <?php
 
-declare(encoding='UTF-8');
 namespace PONIpar;
+
+use PONIpar\XMLHandler;
+use PONIpar\Exceptions\ReadException;
+use PONIpar\Exceptions\WriteException;
+use PONIpar\Exceptions\InternalException;
 
 /*
    This file is part of the PONIpar PHP Onix Parser Library.

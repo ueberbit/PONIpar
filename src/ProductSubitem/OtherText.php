@@ -1,6 +1,5 @@
 <?php
 
-declare(encoding='UTF-8');
 namespace PONIpar\ProductSubitem;
 
 use PONIpar\ProductSubitem\Subitem;
@@ -18,16 +17,16 @@ use PONIpar\ProductSubitem\Subitem;
  * A <OtherText> subitem.
  */
 class OtherText extends Subitem {
-	
+
 	// TODO - add more type constants
-	
+
 	// List 33
 	const TYPE_MAIN_DESCRIPTION = "01";
-	const TYPE_SHORT_DESCRIPTION = "02"; 
+	const TYPE_SHORT_DESCRIPTION = "02";
 	const TYPE_LONG_DESCRIPTION = "03";
 	const TYPE_REVIEW_QUOTE = "08";
 	const TYPE_BIOGRAPHICAL_NOTE = "13";
-	
+
 	// List 34
 	const FORMAT_HTML = '02';
 	const FORMAT_TEXT = '06';
@@ -47,19 +46,19 @@ class OtherText extends Subitem {
 	 */
 	public function __construct($in) {
 		parent::__construct($in);
-		
+
 		try {$this->type = $this->_getSingleChildElementText('TextTypeCode');} catch(\Exception $e) { }
-		
+
 		// try 3.0
 		if( !$this->type )
 			try {$this->type = $this->_getSingleChildElementText('TextType');} catch(\Exception $e) { }
-		
+
 		try {$this->format = $this->_getSingleChildElementText('TextFormat');} catch(\Exception $e) { }
 		try {$this->value = $this->_getSingleChildElementText('Text');} catch(\Exception $e) { }
 		try {$this->author = $this->_getSingleChildElementText('TextAuthor');} catch(\Exception $e) { }
-		
+
 		$this->cleanValue();
-		
+
 		// Save memory.
 		$this->_forgetSource();
 	}
@@ -72,7 +71,7 @@ class OtherText extends Subitem {
 	public function getType() {
 		return $this->type;
 	}
-	
+
 	/**
 	 * Retrieve the format of this text.
 	 *

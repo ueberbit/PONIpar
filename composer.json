@@ -1,7 +1,7 @@
 {
     "name": "kjantzer/ponipar",
     "description": "Stream-based PHP ONIX parser library.",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "type": "library",
     "keywords": ["ONIX", "XML", "parser", "editeur"],
     "homepage": "https://github.com/kjantzer/PONIpar",
@@ -21,23 +21,9 @@
         "php": ">=5.3.0"
     },
     "autoload": {
-        "classmap": [
-			"src/Exceptions.php",
-			"src/DirectoryParser.php",
-			"src/Parser.php",
-			"src/Product.php",
-				"src/ProductSubitem/Subitem.php",
-				"src/ProductSubitem/ProductIdentifier.php",
-				"src/ProductSubitem/Title.php",
-				"src/ProductSubitem/Contributor.php",
-				"src/ProductSubitem/Extent.php",
-                "src/ProductSubitem/Subject.php",
-                "src/ProductSubitem/OtherText.php",
-                "src/ProductSubitem/Prize.php",
-				"src/ProductSubitem/SupplyDetail.php",
-				"src/ProductSubitem/SalesRights.php",
-			"src/XMLHandler.php"
-		]
+        "psr-4": {
+            "PONIpar\\": "src/"
+        }
     },
     "license": "BSD"
 }
