@@ -1,9 +1,9 @@
 <?php
 
-declare(encoding='UTF-8');
 namespace PONIpar\ProductSubitem;
 
 use PONIpar\ProductSubitem\Subitem;
+use PONIpar\Exceptions\ONIXException;
 
 /*
    This file is part of the PONIpar PHP Onix Parser Library.
@@ -67,10 +67,10 @@ class ProductIdentifier extends Subitem {
 		if ($type == self::TYPE_PROPRIETARY) {
 			try {$this->typename = $this->_getSingleChildElementText('IDTypeName');} catch(\Exception $e) { }
 		} // TODO: else: forbid IDTypeName
-		
+
 		// Get the value.
 		$this->value = $this->_getSingleChildElementText('IDValue');
-		
+
 		// Save memory.
 		$this->_forgetSource();
 	}

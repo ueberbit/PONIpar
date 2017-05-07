@@ -1,6 +1,5 @@
 <?php
 
-declare(encoding='UTF-8');
 namespace PONIpar\ProductSubitem;
 
 use PONIpar\ProductSubitem\Subitem;
@@ -18,7 +17,7 @@ use PONIpar\ProductSubitem\Subitem;
  * A <SalesRights> subitem.
  */
 class SalesRights extends Subitem {
-	
+
 	// TODO - add more type constants
 	const TYPE_UNKNOWN = "00";
 	const TYPE_FOR_SALE_EXCLUSIVE = "01";
@@ -31,7 +30,7 @@ class SalesRights extends Subitem {
 	protected $type = null;
 	protected $country = null;
 	protected $territory= null;
-	
+
 
 	/**
 	 * Create a new SalesRights.
@@ -40,16 +39,16 @@ class SalesRights extends Subitem {
 	 */
 	public function __construct($in) {
 		parent::__construct($in);
-		
+
 		try {$this->type = $this->_getSingleChildElementText('SalesRightsType');} catch(\Exception $e) { }
 		try {$this->country = $this->_getSingleChildElementText('RightsCountry');} catch(\Exception $e) { }
 		try {$this->territory = $this->_getSingleChildElementText('RightsTerritory');} catch(\Exception $e) { }
-		
+
 		// try 3.0
 		if( !$this->country && !$this->territory ){
 			try {$this->country = $this->_getSingleChildElementText('Territory/CountriesIncluded');} catch(\Exception $e) { }
 		}
-		
+
 		// Save memory.
 		$this->_forgetSource();
 	}
@@ -71,7 +70,7 @@ class SalesRights extends Subitem {
 	public function getValue() {
 		return $this->country ? $this->country : $this->territory;
 	}
-	
+
 	/*
 		Is For Sale
 	*/

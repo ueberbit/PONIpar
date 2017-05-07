@@ -1,7 +1,10 @@
 <?php
 
-declare(encoding='UTF-8');
 namespace PONIpar;
+
+use PONIpar\Exceptions\XMLException;
+use PONIpar\Exceptions\ONIXException;
+use PONIpar\Exceptions\InternalException;
 
 /*
    This file is part of the PONIpar PHP Onix Parser Library.
@@ -434,13 +437,13 @@ class XMLHandler {
 		'b201' => 'WorkIDType',
 		'x454' => 'WorkRelationCode',
 		'b020' => 'YearOfAnnual',
-		
+
 		// make sure these are captilized
 		'title' => 'Title',
 		'series' => 'Series',
 		'othertext' => 'OtherText'
 	);
-	
+
 	/**
 	 * The version of ONIX we are parsing
 	 */
@@ -526,12 +529,12 @@ class XMLHandler {
 		$level = count($this->openelements);
 		// If this is the root element, set whether short tags are used or not.
 		if ($level == 0) {
-			
+
 			if( isset($attrs['release']) )
 				$this->version = $attrs['release'];
 			else
 				$this->version = '2.1';
-			
+
 			switch ($name) {
 				case 'ONIXMessage':
 					$this->shorttags = false;
@@ -618,12 +621,14 @@ class XMLHandler {
 	protected function handleText($parser, $text) {
 
 		// if currently on the <m182> (SentDate) tag, save the value
-		if( $this->openelements && $this->openelements[count($this->openelements)-1] == 'm182' ){
+		if($this->openelements &&
+				$this->openelements[count($this->openelements)-1] == 'm182' ||
+				$this->openelements[count($this->openelements)-1] == 'x307'){
 			$this->sentDate = $text ? strtotime($text) : null;
 		}
 
 		// If we’re in a product, create and append a text node.
-		if ($this->productDOM) {
+		if($this->productDOM) {
 			$text = $this->productDOM->createTextNode($text);
 			$this->productElement->appendChild($text);
 		}
