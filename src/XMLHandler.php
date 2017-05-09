@@ -619,11 +619,10 @@ class XMLHandler {
 	 * @return null
 	 */
 	protected function handleText($parser, $text) {
-
 		// if currently on the <m182> (SentDate) tag, save the value
 		if($this->openelements &&
-				$this->openelements[count($this->openelements)-1] == 'm182' ||
-				$this->openelements[count($this->openelements)-1] == 'x307'){
+				$this->openelements[count($this->openelements)-1] == 'SentDate' ||
+				$this->openelements[count($this->openelements)-1] == 'SentDateTime'){
 			$this->sentDate = $text ? strtotime($text) : null;
 		}
 
