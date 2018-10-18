@@ -1,7 +1,8 @@
 <?php
 
-declare(encoding='UTF-8');
 namespace PONIpar;
+
+use PONIpar\Exceptions\ReadException;
 
 /*
    This file is part of the PONIpar PHP Onix Parser Library.

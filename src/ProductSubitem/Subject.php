@@ -1,6 +1,5 @@
 <?php
 
-declare(encoding='UTF-8');
 namespace PONIpar\ProductSubitem;
 
 /*
@@ -16,7 +15,7 @@ namespace PONIpar\ProductSubitem;
  * A <Subject> subitem.
  */
 class Subject extends Subitem {
-	
+
 	// TODO - add more constants
 	// list 27
 	const SCHEME_BISAC_SUBJECT_HEADING = "10";
@@ -36,7 +35,7 @@ class Subject extends Subitem {
 	 * The text (keyword) of this subject
 	 */
 	protected $text = null;
-	
+
 	protected $mainSubject = false;
 
 	/**
@@ -46,7 +45,7 @@ class Subject extends Subitem {
 	 */
 	public function __construct($in) {
 		parent::__construct($in);
-		
+
 		try{ $this->scheme = $this->_getSingleChildElementText('SubjectSchemeIdentifier'); } catch(\Exception $e) { }
 		try{ $this->value = $this->_getSingleChildElementText('SubjectCode'); } catch(\Exception $e) { }
 		try {
@@ -57,7 +56,7 @@ class Subject extends Subitem {
 		try{ $this->_getSingleChildElementText('MainSubject'); $this->mainSubject = true; } catch(\Exception $e) {
 			$this->mainSubject = false;
 		}
-		
+
 		// Save memory.
 		$this->_forgetSource();
 	}
@@ -98,7 +97,7 @@ class Subject extends Subitem {
 	public function isMainSubject() {
 		return $this->mainSubject;
 	}
-	
+
 };
 
 ?>

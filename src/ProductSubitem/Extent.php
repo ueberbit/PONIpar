@@ -1,6 +1,5 @@
 <?php
 
-declare(encoding='UTF-8');
 namespace PONIpar\ProductSubitem;
 
 use PONIpar\ProductSubitem\Subitem;
@@ -18,13 +17,13 @@ use PONIpar\ProductSubitem\Subitem;
  * A <Extent> subitem.
  */
 class Extent extends Subitem {
-	
+
 	// TODO - add more type constants
 	// list 23
 	const TYPE_PAGE_COUNT 		= "00";
 	const TYPE_NUMBER_OF_WORDS	= "02";
 	const TYPE_DURATION			= "09";
-	
+
 	// TODO - add more unit constants
 	// list 24
 	const UNIT_WORDS 	= "02";
@@ -40,7 +39,7 @@ class Extent extends Subitem {
 	 * The type of this product identifier.
 	 */
 	protected $type = null;
-	
+
 	/**
 	 * The unit of this product identifier.
 	 */
@@ -58,11 +57,11 @@ class Extent extends Subitem {
 	 */
 	public function __construct($in) {
 		parent::__construct($in);
-		
+
 		$this->type = $this->_getSingleChildElementText('ExtentType');
 		$this->value = $this->_getSingleChildElementText('ExtentValue');
 		$this->unit = $this->_getSingleChildElementText('ExtentUnit');
-		
+
 		// Save memory.
 		$this->_forgetSource();
 	}
@@ -84,7 +83,7 @@ class Extent extends Subitem {
 	public function getValue() {
 		return $this->value;
 	}
-	
+
 	/**
 	 * Retrieve the actual value of this identifier.
 	 *
@@ -93,70 +92,70 @@ class Extent extends Subitem {
 	public function getUnit() {
 		return $this->unit;
 	}
-	
+
 	/*
 		Test type of extent
 	*/
 	public function isPageCount(){
 		return $this->getType() == self::TYPE_PAGE_COUNT;
 	}
-	
+
 	public function isNumberOfWords(){
 		return $this->getType() == self::TYPE_NUMBER_OF_WORDS;
 	}
-	
+
 	public function isDuration(){
 		return $this->getType() == self::TYPE_DURATION;
 	}
-	
+
 	/*
 		Get Value for Duration (converts to different units)
 	*/
 	public function getValueInHours(){
 		return $this->_convertValue('hours');
 	}
-	
+
 	public function getValueInMinutes(){
 		return $this->_convertValue('minutes');
 	}
-	
+
 	public function getValueInSeconds(){
 		return $this->_convertValue();
 	}
-	
+
 	private function _convertValue($to='seconds'){
-		
+
 		$val = $this->getValue();
-		
+
 		// make sure value is in seconds
 		switch($this->getUnit()){
-			
+
 			case self::UNIT_MINUTES: $val = $val * 60; break;
-			
+
 			case self::UNIT_HOURS:
 			case self::UNIT_HHH: $val = intval($val) * 60 * 60; break;
-			
+
 			case self::UNIT_HHHMM:
 				preg_match("/(\d{3})(\d{2})/", $val, $matches);
 				list($val, $h, $m) = $matches;
 				$val = (intval($m)*60) + (intval($h)*60*60);
 				break;
-		
+
 			case self::UNIT_HHHMMSS:
 				preg_match("/(\d{3})(\d{2})(\d{2})/", $val, $matches);
 				list($val, $h, $m, $s) = $matches;
 				$val = intval($s) + (intval($m)*60) + (intval($h)*60*60);
 				break;
-				
+
 			default: break;
 		}
-		
+
 		switch($to){
 			case 'hours': return $val / 60 / 60; break;
 			case 'minutes': return $val / 60; break;
 			case 'seconds': return $val; break;
 		}
-		
+
 		return $val;
 	}
 

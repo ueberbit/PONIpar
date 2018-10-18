@@ -1,9 +1,9 @@
 <?php
 
-declare(encoding='UTF-8');
 namespace PONIpar\ProductSubitem;
 
 use PONIpar\ProductSubitem\Subitem;
+use PONIpar\Exceptions\ONIXException;
 
 /*
    This file is part of the PONIpar PHP Onix Parser Library.
@@ -18,7 +18,7 @@ use PONIpar\ProductSubitem\Subitem;
  * A <Title> subitem.
  */
 class Title extends Subitem {
-	
+
 	// TODO - add more type constants
 	const TYPE_DISTINCTIVE_TITLE = "01";
 
@@ -42,24 +42,24 @@ class Title extends Subitem {
 	 */
 	public function __construct($in) {
 		parent::__construct($in);
-		
+
 		// Retrieve and check the type.
 		$type = $this->_getSingleChildElementText('TitleType');
-		
+
 		if (!preg_match('/^[0-9]{2}$/', $type)) {
 			throw new ONIXException('wrong format of TitleType');
 		}
 		$this->type = $type;
-		
+
 		try {$this->value['title'] = $this->_getSingleChildElementText('TitleText');} catch(\Exception $e) { }
 		try {$this->value['subtitle'] = $this->_getSingleChildElementText('Subtitle');} catch(\Exception $e) { }
-		
+
 		// try 3.0 structure
 		if( !$this->value['title'] ){
 			try {$this->value['title'] = $this->_getSingleChildElementText('TitleElement/TitleText');} catch(\Exception $e) { }
 			try {$this->value['subtitle'] = $this->_getSingleChildElementText('TitleElement/Subtitle');} catch(\Exception $e) { }
 		}
-		
+
 		// Save memory.
 		$this->_forgetSource();
 	}
@@ -83,7 +83,4 @@ class Title extends Subitem {
 	}
 
 };
-
-// a provider ONIX would foundn to use camelcase tag, so support this.
-class_alias('Title', 'Title');
 
