@@ -1,6 +1,6 @@
 # PONIpar – PHP ONIX Parser
 
-[![status](https://img.shields.io/badge/status-Under%20Development-blue.svg)](https://github.com/kjantzer/PONIpar/tree/master)
+[![status](https://img.shields.io/badge/status-Partially%20Developed-blue.svg)](https://github.com/kjantzer/PONIpar/tree/master)
 [![version](https://img.shields.io/packagist/v/kjantzer/PONIpar.svg)](https://packagist.org/packages/kjantzer/ponipar)
 
 ## Main Features
@@ -14,7 +14,7 @@
 * international: converts every input charset to UTF-8 and thus provides you with UTF-8 strings only (not implemented yet)
 
 ## Current Status
-PONIpar is currently under development. It recognizes `<Product>` elements and calls a user-defined callback for each one found, passing a high-level `Product` object that currently allows accessing the product data via standard DOM calls and one or two high-level convenience classes and methods. The first high-level class (for ProductIdentifiers) is already there.
+PONIpar is partially developed (enough for basic use). It recognizes `<Product>` elements and calls a user-defined callback for each one found, passing a high-level `Product` object that currently allows accessing the product data via standard DOM calls and one or two high-level convenience classes and methods. The first high-level class (for ProductIdentifiers) is already there.
 
 Other high-level classes have been built but are a work in progress and will likely need improving. You can see which ones are available by looking in [ProductSubitem](https://github.com/kjantzer/PONIpar/tree/master/src/ProductSubitem) directory.
 
@@ -40,7 +40,7 @@ use PONIpar\ProductSubitem\SupplyDetail;
 Create a function to handle getting the data from each `<Product>`
 
 ```php
-parse_product = function($product){
+$parse_product = function($product){
 	
 	$isbn_13 = $product->getIdentifier(ProductIdentifier::TYPE_ISBN13);
 	
@@ -81,15 +81,12 @@ Begin parsing an ONIX file. The `parse_product` function above will be called fo
 ```php
 $parser = new Parser();	
 $parser->useFile($file);
-$parser->setProductHandler(parse_product);
+$parser->setProductHandler($parse_product);
 $parser->parse();
 ```
 
 ## Requirements
 PONIpar requires at least PHP 5.3 with the “XML Parser” extension.
 
-## License
-The software is provided under the terms of the new (3-clause) BSD license. Please see the file LICENSE for details.
-
 ## Author
-PONIpar is authored by [UEBERBIT GmbH](http://www.ueberbit.de) with additional development by [Blackstone Audio, Inc.](http://www.blackstoneaudio.com)
+PONIpar is authored by [UEBERBIT GmbH](http://www.ueberbit.de) with additional development by [Blackstone Publishing, Inc.](http://www.blackstonepublishing.com)

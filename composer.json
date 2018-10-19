@@ -1,7 +1,7 @@
 {
     "name": "kjantzer/ponipar",
     "description": "Stream-based PHP ONIX parser library.",
-    "version": "0.2.0",
+    "version": "1.0.0",
     "type": "library",
     "keywords": ["ONIX", "XML", "parser", "editeur"],
     "homepage": "https://github.com/kjantzer/PONIpar",
