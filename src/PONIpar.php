@@ -1,6 +1,5 @@
 <?php
 
-declare(encoding='UTF-8');
 namespace PONIpar;
 
 /*
@@ -17,16 +16,24 @@ namespace PONIpar;
    require_once them.
 */
 
-foreach (array(
-	'Exceptions',
-	'DirectoryParser',
-	'Parser',
-	'Product',
-	'ProductSubitem',
-		'ProductIdentifierProductSubitem',
-	'XMLHandler',
-) as $part) {
-	require_once "$part.php";
-}
+// foreach (array(
+// 	'Exceptions',
+// 	'DirectoryParser',
+// 	'Parser',
+// 	'Product',
+// 		'ProductSubitem/Subitem',
+// 		'ProductSubitem/ProductIdentifier',
+// 		'ProductSubitem/Title',
+// 		'ProductSubitem/Contributor',
+// 		'ProductSubitem/Extent',
+// 		'ProductSubitem/Subject',
+// 		'ProductSubitem/OtherText',
+// 		'ProductSubitem/SupplyDetail',
+// 		'ProductSubitem/SalesRights',
+//         'ProductSubitem/ProductFormFeature',
+// 	'XMLHandler',
+// ) as $part) {
+// 	require_once "$part.php";
+// }
 
 ?>

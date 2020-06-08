@@ -1,7 +1,11 @@
 <?php
 
-declare(encoding='UTF-8');
-namespace PONIpar;
+namespace PONIpar\ProductSubitem;
+
+use PONIpar\Exceptions\InternalException;
+use PONIpar\Exceptions\ElementNotFoundException;
+use PONIpar\Exceptions\TooManyElementsFoundException;
+
 
 /*
    This file is part of the PONIpar PHP Onix Parser Library.
@@ -20,7 +24,7 @@ namespace PONIpar;
  * everything starting with “get” should definitely be available for public
  * methods in subclasses.
  */
-class ProductSubitem {
+abstract class Subitem {
 
 	/**
 	 * A DOM implementation.
@@ -131,14 +135,19 @@ class ProductSubitem {
 		// Check if the root element’s name matches. Please don’t hack this to
 		// allow other namespaces or naming schemes. Instead, send a patch to
 		// make PONIpar more flexible! :)
-		$called = get_called_class();
-		$classwithoutns = substr(strrchr(__CLASS__, '\\'), 1);
-		$shouldbe = __NAMESPACE__ . '\\' . $doc->documentElement->tagName . $classwithoutns;
-		if ($called != $shouldbe) {
-			throw new InternalException(
-				"trying to extend " . __CLASS__ . " from invalidly named class $called (should be $shouldbe)"
-			);
-		}
+
+		// Too bad! can come back to this later....
+		// This kind of checking doesn't work well with the 3.0 support I've added.
+		// It seems to me that making additional classes for 3.0 would add a lot of duplicate code
+		// $called = get_called_class();
+		// $classwithoutns = substr(strrchr(__CLASS__, '\\'), 1);
+		// $shouldbe = __NAMESPACE__ . '\\' . $doc->documentElement->tagName;
+		// if ($called != $shouldbe) {
+		// 	throw new InternalException(
+		// 		"trying to extend " . __CLASS__ . " from invalidly named class $called (should be $shouldbe)"
+		// 	);
+		// }
+
 		// Store document.
 		$this->doc = $doc;
 		// Create an XPath instance and store it.

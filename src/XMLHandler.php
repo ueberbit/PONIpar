@@ -1,7 +1,10 @@
 <?php
 
-declare(encoding='UTF-8');
 namespace PONIpar;
+
+use PONIpar\Exceptions\XMLException;
+use PONIpar\Exceptions\ONIXException;
+use PONIpar\Exceptions\InternalException;
 
 /*
    This file is part of the PONIpar PHP Onix Parser Library.
@@ -48,6 +51,7 @@ class XMLHandler {
 		'b075' => 'AudienceRangePrecision',
 		'b074' => 'AudienceRangeQualifier',
 		'b076' => 'AudienceRangeValue',
+		'j141' => 'AvailabilityCode',
 		'barcode' => 'Barcode',
 		'x312' => 'BarcodeType',
 		'batchbonus' => 'BatchBonus',
@@ -139,6 +143,7 @@ class XMLHandler {
 		'b058' => 'EditionStatement',
 		'x419' => 'EditionType',
 		'b217' => 'EditionVersionNumber',
+		'b056' => 'EditionTypeCode',
 		'j272' => 'EmailAddress',
 		'b325' => 'EndDate',
 		'epubusageconstraint' => 'EpubUsageConstraint',
@@ -147,6 +152,7 @@ class XMLHandler {
 		'x318' => 'EpubUsageType',
 		'x321' => 'EpubUsageUnit',
 		'j302' => 'ExpectedDate',
+		'b064' => 'BASICMainSubject',
 		'extent' => 'Extent',
 		'b218' => 'ExtentType',
 		'b220' => 'ExtentUnit',
@@ -212,10 +218,12 @@ class XMLHandler {
 		'b125' => 'NumberOfIllustrations',
 		'x322' => 'NumberOfItemsOfThisForm',
 		'b061' => 'NumberOfPages',
+		'b210' => 'NumberOfPieces',
 		'ONIXmessage' => 'ONIXMessage',
 		'j350' => 'OnHand',
 		'j351' => 'OnOrder',
 		'onorderdetail' => 'OnOrderDetail',
+		'j143' => 'OnSaleDate',
 		'j144' => 'OrderTime',
 		'j145' => 'PackQuantity',
 		'pagerun' => 'PageRun',
@@ -239,10 +247,12 @@ class XMLHandler {
 		'x463' => 'PriceConditionType',
 		'pricedate' => 'PriceDate',
 		'x476' => 'PriceDateRole',
+		'j161' => 'PriceEffectiveFrom',
 		'j239' => 'PricePer',
 		'j261' => 'PriceQualifier',
 		'j266' => 'PriceStatus',
 		'x462' => 'PriceType',
+		'j148' => 'PriceTypeCode',
 		'j262' => 'PriceTypeDescription',
 		'x416' => 'PrimaryContentType',
 		'x457' => 'PrimaryPart',
@@ -253,6 +263,7 @@ class XMLHandler {
 		'g343' => 'PrizeJury',
 		'g126' => 'PrizeName',
 		'g127' => 'PrizeYear',
+		'x503' => 'PrizeStatement',
 		'product' => 'Product',
 		'j396' => 'ProductAvailability',
 		'productclassification' => 'ProductClassification',
@@ -288,6 +299,7 @@ class XMLHandler {
 		'b081' => 'PublisherName',
 		'publisherrepresentative' => 'PublisherRepresentative',
 		'publishingdate' => 'PublishingDate',
+		'b003' => 'PublicationDate',
 		'x448' => 'PublishingDateRole',
 		'publishingdetail' => 'PublishingDetail',
 		'b291' => 'PublishingRole',
@@ -307,6 +319,7 @@ class XMLHandler {
 		'reissue' => 'Reissue',
 		'j365' => 'ReissueDate',
 		'j366' => 'ReissueDescription',
+		'h208' => 'RelationCode',
 		'relatedmaterial' => 'RelatedMaterial',
 		'relatedproduct' => 'RelatedProduct',
 		'relatedwork' => 'RelatedWork',
@@ -331,6 +344,8 @@ class XMLHandler {
 		'j268' => 'ReturnsCodeType',
 		'x460' => 'ReturnsCodeTypeName',
 		'returnsconditions' => 'ReturnsConditions',
+		'b090' => 'RightsCountry',
+		'b388' => 'RightsTerritory',
 		'salesrights' => 'SalesRights',
 		'b089' => 'SalesRightsType',
 		'salesoutlet' => 'SalesOutlet',
@@ -394,6 +409,8 @@ class XMLHandler {
 		'b290' => 'TextItemType',
 		'b374' => 'TextSourceCorporate',
 		'x426' => 'TextType',
+		'd102' => 'TextTypeCode',
+		'd103' => 'TextFormat',
 		'b369' => 'ThesisPresentedTo',
 		'b368' => 'ThesisType',
 		'b370' => 'ThesisYear',
@@ -404,6 +421,7 @@ class XMLHandler {
 		'b043' => 'TitlesAfterNames',
 		'b038' => 'TitlesBeforeNames',
 		'x478' => 'TitleStatement',
+		'b018' => 'TitleOfSeries',
 		'b203' => 'TitleText',
 		'b202' => 'TitleType',
 		'b031' => 'TitleWithoutPrefix',
@@ -419,7 +437,22 @@ class XMLHandler {
 		'b201' => 'WorkIDType',
 		'x454' => 'WorkRelationCode',
 		'b020' => 'YearOfAnnual',
+
+		// make sure these are captilized
+		'title' => 'Title',
+		'series' => 'Series',
+		'othertext' => 'OtherText'
 	);
+
+	/**
+	 * The version of ONIX we are parsing
+	 */
+	protected $version = null;
+
+	/**
+	 * The date the ONIX was sent (int Unix timestamp)
+	 */
+	protected $sentDate = null;
 
 	/**
 	 * Whether the document that’s being parsed uses short tags or not.
@@ -496,6 +529,12 @@ class XMLHandler {
 		$level = count($this->openelements);
 		// If this is the root element, set whether short tags are used or not.
 		if ($level == 0) {
+
+			if( isset($attrs['release']) )
+				$this->version = $attrs['release'];
+			else
+				$this->version = '2.1';
+
 			switch ($name) {
 				case 'ONIXMessage':
 					$this->shorttags = false;
@@ -580,8 +619,15 @@ class XMLHandler {
 	 * @return null
 	 */
 	protected function handleText($parser, $text) {
+		// if currently on the <m182> (SentDate) tag, save the value
+		if($this->openelements &&
+				$this->openelements[count($this->openelements)-1] == 'SentDate' ||
+				$this->openelements[count($this->openelements)-1] == 'SentDateTime'){
+			$this->sentDate = $text ? strtotime($text) : null;
+		}
+
 		// If we’re in a product, create and append a text node.
-		if ($this->productDOM) {
+		if($this->productDOM) {
 			$text = $this->productDOM->createTextNode($text);
 			$this->productElement->appendChild($text);
 		}
@@ -595,7 +641,7 @@ class XMLHandler {
 	 */
 	protected function handleProduct($dom) {
 		if ($this->productHandler) {
-			$product = new Product($dom);
+			$product = new Product($dom, $this->version);
 			call_user_func($this->productHandler, $product);
 		}
 	}
@@ -721,6 +767,24 @@ class XMLHandler {
 		}
 		$this->productHandler = $cb;
 		return $this;
+	}
+
+	/**
+	 * Get Version of ONIX being parsed
+	 *
+	 * @return string
+	 */
+	public function getVersion(){
+		return $this->version;
+	}
+
+	/**
+	 * Get Sent Date of ONIX being parsed
+	 *
+	 * @return datetime
+	 */
+	public function getSentDate(){
+		return $this->sentDate;
 	}
 
 }
